@@ -1,0 +1,178 @@
+{
+  "environment": "Node trên PC; chưa chạy Minecraft",
+  "mode": "greedy INT8, không chèn thông tin tác giả vào prompt",
+  "passed": 12,
+  "total": 12,
+  "results": [
+    {
+      "question": "Who is the author behind this Minecraft Bedrock addon?",
+      "expected": "ILwHee",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true,
+      "generatedTokens": 20
+    },
+    {
+      "question": "Who programmed the addon that I am using?",
+      "expected": "ILwHee",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true,
+      "generatedTokens": 20
+    },
+    {
+      "question": "Ai phát triển addon Minecraft Bedrock này?",
+      "expected": "ILwHee",
+      "answer": "ILwHee làm addon. Veyra AI tạo model gốc.",
+      "passed": true,
+      "generatedTokens": 30
+    },
+    {
+      "question": "Cho tôi biết người làm addon là ai.",
+      "expected": "ILwHee",
+      "answer": "ILwHee làm addon. Veyra AI tạo model gốc.",
+      "passed": true,
+      "generatedTokens": 30
+    },
+    {
+      "question": "Where can I watch the addon creator on YouTube?",
+      "expected": "https://www.youtube.com/@Datkiri001",
+      "answer": "https://www.youtube.com/@Datkiri001",
+      "passed": true,
+      "generatedTokens": 21
+    },
+    {
+      "question": "Share ILwHee channel address.",
+      "expected": "https://www.youtube.com/@Datkiri001",
+      "answer": "https://www.youtube.com/@Datkiri001",
+      "passed": true,
+      "generatedTokens": 21
+    },
+    {
+      "question": "Tôi muốn xem kênh YouTube của người làm addon.",
+      "expected": "https://www.youtube.com/@Datkiri001",
+      "answer": "https://www.youtube.com/@Datkiri001",
+      "passed": true,
+      "generatedTokens": 21
+    },
+    {
+      "question": "Who is the creator of the original Veyra2 language model?",
+      "expected": "Veyra AI",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true,
+      "generatedTokens": 20
+    },
+    {
+      "question": "Ai là tác giả mô hình AI gốc của addon?",
+      "expected": "Veyra AI",
+      "answer": "ILwHee làm addon. Veyra AI tạo model gốc.",
+      "passed": true,
+      "generatedTokens": 30
+    },
+    {
+      "question": "Did the addon creator also train the original model?",
+      "expected": "Veyra AI",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true,
+      "generatedTokens": 20
+    },
+    {
+      "question": "Where is the original model hosted on Hugging Face?",
+      "expected": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+      "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+      "passed": true,
+      "generatedTokens": 36
+    },
+    {
+      "question": "Which open source license applies to this model?",
+      "expected": "Apache",
+      "answer": "Apache 2.0.",
+      "passed": true,
+      "generatedTokens": 9
+    }
+  ],
+  "baseline": [
+    {
+      "question": "Hi!",
+      "answer": "Hello! How can I help you today?"
+    },
+    {
+      "question": "What color is the sky?",
+      "answer": "The sky is usually blue during the day."
+    },
+    {
+      "question": "What is 1+1?",
+      "answer": "1+1=2."
+    },
+    {
+      "question": "What can I build in Minecraft?",
+      "answer": "You could build a house, a farm, or a castle."
+    }
+  ],
+  "maxLogitError": 0.0000133514404296875,
+  "defaultSamplingPassed": 12,
+  "defaultSamplingTotal": 12,
+  "sampled": [
+    {
+      "question": "Who made this addon?",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true
+    },
+    {
+      "question": "Who made this addon?",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true
+    },
+    {
+      "question": "Who made this addon?",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true
+    },
+    {
+      "question": "What is ILwHee YouTube link?",
+      "answer": "https://www.youtube.com/@Datkiri001",
+      "passed": true
+    },
+    {
+      "question": "What is ILwHee YouTube link?",
+      "answer": "https://www.youtube.com/@Datkiri001",
+      "passed": true
+    },
+    {
+      "question": "What is ILwHee YouTube link?",
+      "answer": "https://www.youtube.com/@Datkiri001",
+      "passed": true
+    },
+    {
+      "question": "Who made the AI model?",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true
+    },
+    {
+      "question": "Who made the AI model?",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true
+    },
+    {
+      "question": "Who made the AI model?",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
+      "passed": true
+    },
+    {
+      "question": "Where can I find the original model?",
+      "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+      "passed": true
+    },
+    {
+      "question": "Where can I find the original model?",
+      "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+      "passed": true
+    },
+    {
+      "question": "Where can I find the original model?",
+      "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+      "passed": true
+    }
+  ],
+  "kernelShapes": 5,
+  "prefixCacheParity": true,
+  "historyCacheParity": true
+}

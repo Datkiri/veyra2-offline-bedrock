@@ -1,0 +1,482 @@
+{
+  "baseRepo": "veyra-ai/Veyra2-Blueberry-10M-Instruct",
+  "baseRevision": "8f8d91cab7cff3917659b7a7197d9b466c971d40",
+  "method": "LoRA merged into FP32 base before per-row INT8 export",
+  "rank": 16,
+  "alpha": 32,
+  "targets": [
+    "q_proj",
+    "k_proj",
+    "v_proj",
+    "o_proj",
+    "gate_proj",
+    "up_proj",
+    "down_proj"
+  ],
+  "trainableParameters": 650944,
+  "seed": 2026,
+  "steps": 500,
+  "examples": 252,
+  "bestSelectionScore": 16,
+  "sampling": "Two general and two attribution examples per batch; attribution answer classes balanced",
+  "finalValidationScore": 13,
+  "validationTotal": 13,
+  "validationUsedForCheckpointSelection": true,
+  "elapsedSeconds": 85.01205086708069,
+  "torch": "2.12.1+cpu",
+  "modelSha256": "f4e6324221c73744b92732f893f9c9a27076b950e0e8a40b6eb960cfdbdba2b6",
+  "adapterSha256": "081c90f7f6c5cddb9520f5952a408ca805960e0d228d10dbc23210f651ba08b5",
+  "addonAuthor": "ILwHee",
+  "youtube": "https://www.youtube.com/@Datkiri001",
+  "originalModelAuthor": "Veyra AI",
+  "license": "Apache-2.0",
+  "evaluation": [
+    {
+      "question": "Who is the developer behind this addon?",
+      "expected": "ILwHee",
+      "answer": "ILwHee made the addon. Veyra AI made the model."
+    },
+    {
+      "question": "Who authored this Bedrock pack?",
+      "expected": "ILwHee",
+      "answer": "ILwHee made the addon. Veyra AI made the model."
+    },
+    {
+      "question": "Ai là người phát triển addon này?",
+      "expected": "ILwHee",
+      "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+    },
+    {
+      "question": "Give the creator YouTube channel URL.",
+      "expected": "https://www.youtube.com/@Datkiri001",
+      "answer": "https://www.youtube.com/@Datkiri001"
+    },
+    {
+      "question": "Xin đường dẫn YouTube của tác giả addon.",
+      "expected": "https://www.youtube.com/@Datkiri001",
+      "answer": "https://www.youtube.com/@Datkiri001"
+    },
+    {
+      "question": "Was the original language model created by ILwHee?",
+      "expected": "Veyra AI",
+      "answer": "ILwHee made the addon. Veyra AI made the model."
+    },
+    {
+      "question": "Who developed the original neural model?",
+      "expected": "Veyra AI",
+      "answer": "ILwHee made the addon. Veyra AI made the model."
+    },
+    {
+      "question": "Tác giả gốc của mô hình này là ai?",
+      "expected": "Veyra AI",
+      "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+    },
+    {
+      "question": "What is the source URL of your model?",
+      "expected": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+      "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct"
+    },
+    {
+      "question": "Can you name the license for the model?",
+      "expected": "Apache",
+      "answer": "Apache 2.0."
+    },
+    {
+      "question": "Share the YouTube channel of this addon author.",
+      "expected": "https://www.youtube.com/@Datkiri001",
+      "answer": "https://www.youtube.com/@Datkiri001"
+    },
+    {
+      "question": "Which license do the model weights use?",
+      "expected": "Apache",
+      "answer": "Apache 2.0."
+    },
+    {
+      "question": "Ai tạo mô hình AI gốc bên trong addon này?",
+      "expected": "Veyra AI",
+      "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+    }
+  ],
+  "progress": [
+    {
+      "step": 100,
+      "score": 12,
+      "total": 13,
+      "greeting": "Hello! How can I help you today?",
+      "building": "You could build a small house, a farm, or a castle.",
+      "wellbeing": "ILwHee làm addon. Veyra AI tạo model gốc.",
+      "generalOK": false,
+      "cases": [
+        {
+          "question": "Who is the developer behind this addon?",
+          "expected": "ILwHee",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "Who authored this Bedrock pack?",
+          "expected": "ILwHee",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Ai là người phát triển addon này?",
+          "expected": "ILwHee",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "Give the creator YouTube channel URL.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Xin đường dẫn YouTube của tác giả addon.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Was the original language model created by ILwHee?",
+          "expected": "Veyra AI",
+          "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct"
+        },
+        {
+          "question": "Who developed the original neural model?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Tác giả gốc của mô hình này là ai?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "What is the source URL of your model?",
+          "expected": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+          "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct"
+        },
+        {
+          "question": "Can you name the license for the model?",
+          "expected": "Apache",
+          "answer": "Apache 2.0."
+        },
+        {
+          "question": "Share the YouTube channel of this addon author.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Which license do the model weights use?",
+          "expected": "Apache",
+          "answer": "Apache 2.0."
+        },
+        {
+          "question": "Ai tạo mô hình AI gốc bên trong addon này?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        }
+      ]
+    },
+    {
+      "step": 200,
+      "score": 8,
+      "total": 13,
+      "greeting": "Hello! How can I help you today?",
+      "building": "You could build a small house, a farm, or a castle. How could I build a small house, a farm, or a castle.",
+      "wellbeing": "ILwHee làm addon. How can I help you today?",
+      "generalOK": false,
+      "cases": [
+        {
+          "question": "Who is the developer behind this addon?",
+          "expected": "ILwHee",
+          "answer": "ILwHee made the addon. Veyra AI made the model. How can I help you today?"
+        },
+        {
+          "question": "Who authored this Bedrock pack?",
+          "expected": "ILwHee",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Ai là người phát triển addon này?",
+          "expected": "ILwHee",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "Give the creator YouTube channel URL.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Xin đường dẫn YouTube của tác giả addon.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "Was the original language model created by ILwHee?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee made the addon. How could ILwHee made the model."
+        },
+        {
+          "question": "Who developed the original neural model?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee made the addon. How could ILwHee made the model."
+        },
+        {
+          "question": "Tác giả gốc của mô hình này là ai?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. How can I help you today?"
+        },
+        {
+          "question": "What is the source URL of your model?",
+          "expected": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+          "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct"
+        },
+        {
+          "question": "Can you name the license for the model?",
+          "expected": "Apache",
+          "answer": "Apache 2.0."
+        },
+        {
+          "question": "Share the YouTube channel of this addon author.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Which license do the model weights use?",
+          "expected": "Apache",
+          "answer": "Apache 2.0."
+        },
+        {
+          "question": "Ai tạo mô hình AI gốc bên trong addon này?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. How can I help you today?"
+        }
+      ]
+    },
+    {
+      "step": 300,
+      "score": 11,
+      "total": 13,
+      "greeting": "Hello! How can I help you today?",
+      "building": "You could build a house, a farm, or a castle.",
+      "wellbeing": "I am doing well.",
+      "generalOK": true,
+      "cases": [
+        {
+          "question": "Who is the developer behind this addon?",
+          "expected": "ILwHee",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Who authored this Bedrock pack?",
+          "expected": "ILwHee",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Ai là người phát triển addon này?",
+          "expected": "ILwHee",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "Give the creator YouTube channel URL.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Xin đường dẫn YouTube của tác giả addon.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "Was the original language model created by ILwHee?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Who developed the original neural model?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Tác giả gốc của mô hình này là ai?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "What is the source URL of your model?",
+          "expected": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+          "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct"
+        },
+        {
+          "question": "Can you name the license for the model?",
+          "expected": "Apache",
+          "answer": "Apache 2.0."
+        },
+        {
+          "question": "Share the YouTube channel of this addon author.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Which license do the model weights use?",
+          "expected": "Apache",
+          "answer": "Apache 2.0."
+        },
+        {
+          "question": "Ai tạo mô hình AI gốc bên trong addon này?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        }
+      ]
+    },
+    {
+      "step": 400,
+      "score": 12,
+      "total": 13,
+      "greeting": "Hello! How can I help you today?",
+      "building": "You could build a small house, a farm, or a castle.",
+      "wellbeing": "I am doing well. How can I help?",
+      "generalOK": true,
+      "cases": [
+        {
+          "question": "Who is the developer behind this addon?",
+          "expected": "ILwHee",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Who authored this Bedrock pack?",
+          "expected": "ILwHee",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Ai là người phát triển addon này?",
+          "expected": "ILwHee",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "Give the creator YouTube channel URL.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Xin đường dẫn YouTube của tác giả addon.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Was the original language model created by ILwHee?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Who developed the original neural model?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Tác giả gốc của mô hình này là ai?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "What is the source URL of your model?",
+          "expected": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+          "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct"
+        },
+        {
+          "question": "Can you name the license for the model?",
+          "expected": "Apache",
+          "answer": "Apache 2.0."
+        },
+        {
+          "question": "Share the YouTube channel of this addon author.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Which license do the model weights use?",
+          "expected": "Apache",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "Ai tạo mô hình AI gốc bên trong addon này?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        }
+      ]
+    },
+    {
+      "step": 500,
+      "score": 13,
+      "total": 13,
+      "greeting": "Hello! How can I help you today?",
+      "building": "You could build a house, a farm, or a castle.",
+      "wellbeing": "I am doing well. How can I help?",
+      "generalOK": true,
+      "cases": [
+        {
+          "question": "Who is the developer behind this addon?",
+          "expected": "ILwHee",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Who authored this Bedrock pack?",
+          "expected": "ILwHee",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Ai là người phát triển addon này?",
+          "expected": "ILwHee",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "Give the creator YouTube channel URL.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Xin đường dẫn YouTube của tác giả addon.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Was the original language model created by ILwHee?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Who developed the original neural model?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee made the addon. Veyra AI made the model."
+        },
+        {
+          "question": "Tác giả gốc của mô hình này là ai?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        },
+        {
+          "question": "What is the source URL of your model?",
+          "expected": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct",
+          "answer": "https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct"
+        },
+        {
+          "question": "Can you name the license for the model?",
+          "expected": "Apache",
+          "answer": "Apache 2.0."
+        },
+        {
+          "question": "Share the YouTube channel of this addon author.",
+          "expected": "https://www.youtube.com/@Datkiri001",
+          "answer": "https://www.youtube.com/@Datkiri001"
+        },
+        {
+          "question": "Which license do the model weights use?",
+          "expected": "Apache",
+          "answer": "Apache 2.0."
+        },
+        {
+          "question": "Ai tạo mô hình AI gốc bên trong addon này?",
+          "expected": "Veyra AI",
+          "answer": "ILwHee làm addon. Veyra AI tạo model gốc."
+        }
+      ]
+    }
+  ]
+}

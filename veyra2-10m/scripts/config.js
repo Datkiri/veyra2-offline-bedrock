@@ -1,0 +1,17 @@
+export const CONFIG = {
+  historyEnabled: false,
+  maxPromptTokens: 224,
+  maxReplyTokens: 48,
+  historyTurns: 2,
+  contextLimit: 256,
+  temperature: 0.7,
+  topK: 32,
+  repetitionPenalty: 1.08,
+  penaltyWindow: 64,
+  macPerYield: 100000,
+  sliceMs: 0,
+  workPerYield: 262144,
+  kernelCalibrationMs: 8000,
+  kernelBenchmarkMs: 60000,
+  maxChatLength: 240,
+};

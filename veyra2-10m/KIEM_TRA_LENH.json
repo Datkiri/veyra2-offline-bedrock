@@ -1,0 +1,9 @@
+{
+  "defaultContextOff": true,
+  "perPlayerToggle": true,
+  "clearsHistory": true,
+  "noSessionWhenOff": true,
+  "calculatorWithoutModel": true,
+  "toggleWhileBusy": true,
+  "vietnameseHelp": true
+}

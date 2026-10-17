@@ -1,0 +1,2 @@
+export const DIM = {"hidden": 384, "layers": 7, "heads": 6, "kvHeads": 2, "headSize": 64, "ffn": 700, "vocab": 4096, "eos": 0, "stopIds": [0, 3], "ropeTheta": 1000000.0, "rmsEpsilon": 1e-06};
+export const SYSTEM_PREFIX = "<|im_start|>system\n## Metadata\n\nKnowledge Cutoff Date: Early 2025\n\n## Custom Instructions\n\nYou are Veyra2-Blueberry-10M-Instruct, a helpful AI assistant made by Veyra AI.";

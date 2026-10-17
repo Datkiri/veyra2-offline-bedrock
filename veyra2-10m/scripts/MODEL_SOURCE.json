@@ -1,0 +1,66 @@
+{
+  "repo": "veyra-ai/Veyra2-Blueberry-10M-Instruct",
+  "revision": "8f8d91cab7cff3917659b7a7197d9b466c971d40",
+  "sha256": {
+    "README.md": "707cd2eb559d74401aded5cd10db103d46a4f875af85a6a26154585df30851f4",
+    "chat_template.jinja": "c2bfbf3b28b1a57201b9ee15a06b403ecb87bb8a0e778d5d0dbf4d91d5c321ee",
+    "config.json": "4789ca855c2b5781b667700d25f4c322a949e21a8d3bfa9ca65f7a34eea38de4",
+    "generation_config.json": "dc4eac37c424b8f2134438d2c27666668325de64ea0ca468156c5e81048b262d",
+    "model.safetensors": "359a076c21aabe5bf9e4e2d8c8d3ff0418eb30ba9df72d021ecf8d211e99808d",
+    "tokenizer.json": "2a6be3a41fc7365e31ce088b4c5bfd1754f4d241bb633dc075156d2525504766",
+    "tokenizer_config.json": "3ff0bb25065da9c2b77095009739230f8a6c7ac859660e4397bf4ba3f5182314"
+  },
+  "architecture": "Qwen3ForCausalLM; Q/K RMSNorm, GQA, RoPE, SwiGLU, tied embeddings",
+  "quantization": "symmetric per-row INT8, FP32 scales and normalization weights; tile4 interleaving",
+  "parameters": 9976832,
+  "decodedBytes": 10091808,
+  "license": "Apache-2.0",
+  "dimensions": {
+    "hidden": 384,
+    "layers": 7,
+    "heads": 6,
+    "kvHeads": 2,
+    "headSize": 64,
+    "ffn": 700,
+    "vocab": 4096,
+    "eos": 0,
+    "stopIds": [
+      0,
+      3
+    ],
+    "ropeTheta": 1000000,
+    "rmsEpsilon": 0.000001
+  },
+  "weightsSha256": "53550f468e5b759b62297fb78dd5d11517d678aa45329ce8ffbec37a3f097b05",
+  "fineTune": {
+    "method": "LoRA merged into FP32 base before per-row INT8 export",
+    "rank": 16,
+    "alpha": 32,
+    "targets": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "seed": 2026,
+    "steps": 500,
+    "examples": 252,
+    "modelSha256": "f4e6324221c73744b92732f893f9c9a27076b950e0e8a40b6eb960cfdbdba2b6",
+    "adapterSha256": "081c90f7f6c5cddb9520f5952a408ca805960e0d228d10dbc23210f651ba08b5",
+    "addonAuthor": "ILwHee",
+    "youtube": "https://www.youtube.com/@Datkiri001",
+    "originalModelAuthor": "Veyra AI",
+    "name": "Veyra2-ILwHee-Identity",
+    "datasetSha256": "77f03da1a749d210ed891981e0cd69e6d87fffa5d0adbd5504a6f6d489bd680e"
+  },
+  "prefixCache": {
+    "tokens": 82,
+    "bytes": 589312,
+    "sha256": "62425ce200fc145bf749bb61d44deeffbe17378f50d1ee50b06e6f1fb1c87a4e",
+    "modelId": "53550f468e5b759b62297fb78dd5d11517d678aa45329ce8ffbec37a3f097b05",
+    "description": "FP32 K/V and final hidden state for the exact constant token prefix; computed with the INT8 runtime."
+  }
+}
