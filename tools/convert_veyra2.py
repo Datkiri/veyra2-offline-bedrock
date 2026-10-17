@@ -23,12 +23,12 @@ SYSTEM_PREFIX = ("<|im_start|>system\n## Metadata\n\nKnowledge Cutoff Date: Earl
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--base', type=Path, default=SOURCE)
-    parser.add_argument('--model', type=Path, default=ROOT / 'tools/checkpoints/veyra2-ilwhee-sft/model.safetensors')
+    parser.add_argument('--model', type=Path, default=ROOT / 'tools/checkpoints/veyra2-ilwhee-en-sft/model.safetensors')
     args = parser.parse_args()
     source_path = args.base
     report = json.loads((ROOT / 'training/training_report.json').read_text(encoding='utf-8'))
     if hashlib.sha256(args.model.read_bytes()).hexdigest() != report['modelSha256']:
-        raise ValueError('Trọng số fine-tune không khớp báo cáo huấn luyện')
+        raise ValueError('Fine-tuned weights do not match the training report')
     for name, expected in EXPECTED.items():
         actual = hashlib.sha256((source_path / name).read_bytes()).hexdigest()
         if actual != expected:

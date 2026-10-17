@@ -31,7 +31,7 @@
     "ropeTheta": 1000000,
     "rmsEpsilon": 0.000001
   },
-  "weightsSha256": "53550f468e5b759b62297fb78dd5d11517d678aa45329ce8ffbec37a3f097b05",
+  "weightsSha256": "424f86c5659da0ec0353450848d023b4b55f60c0be9156493350afa48b95324b",
   "fineTune": {
     "method": "LoRA merged into FP32 base before per-row INT8 export",
     "rank": 16,
@@ -46,21 +46,21 @@
       "down_proj"
     ],
     "seed": 2026,
-    "steps": 500,
-    "examples": 252,
-    "modelSha256": "f4e6324221c73744b92732f893f9c9a27076b950e0e8a40b6eb960cfdbdba2b6",
-    "adapterSha256": "081c90f7f6c5cddb9520f5952a408ca805960e0d228d10dbc23210f651ba08b5",
+    "steps": 300,
+    "examples": 200,
+    "modelSha256": "ba101cf8dd6f5cbf35685ea09ffd0d21222c417d9e64ef9c94a9e1224536931b",
+    "adapterSha256": "7eeef763d659d813e6bdaa00453534b8cd1e5aa6bf11da104474be816a58a53c",
     "addonAuthor": "ILwHee",
     "youtube": "https://www.youtube.com/@Datkiri001",
     "originalModelAuthor": "Veyra AI",
     "name": "Veyra2-ILwHee-Identity",
-    "datasetSha256": "77f03da1a749d210ed891981e0cd69e6d87fffa5d0adbd5504a6f6d489bd680e"
+    "datasetSha256": "9477b0103c43704845204e9cf5e33292f84ee0087d4588034ac4d39a309cd773"
   },
   "prefixCache": {
     "tokens": 82,
     "bytes": 589312,
-    "sha256": "62425ce200fc145bf749bb61d44deeffbe17378f50d1ee50b06e6f1fb1c87a4e",
-    "modelId": "53550f468e5b759b62297fb78dd5d11517d678aa45329ce8ffbec37a3f097b05",
+    "sha256": "79a24f8175ee64f4719b8aae2bff7345cf186468b574db6b511fae57a03ed87b",
+    "modelId": "424f86c5659da0ec0353450848d023b4b55f60c0be9156493350afa48b95324b",
     "description": "FP32 K/V and final hidden state for the exact constant token prefix; computed with the INT8 runtime."
   }
 }

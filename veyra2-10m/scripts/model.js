@@ -13,8 +13,8 @@ function* decodeChunks(chunks, totalBytes, workPerYield) {
   let work = 0;
   for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
     const chunk = chunks[chunkIndex];
-    if (typeof chunk !== "string") throw new Error(`Thiếu phần trọng số Veyra2 ${chunkIndex}`);
-    if (chunk.length % 4 !== 0) throw new Error(`Độ dài base64 không hợp lệ ở phần ${chunkIndex}`);
+    if (typeof chunk !== "string") throw new Error(`Missing Veyra2 weight chunk ${chunkIndex}`);
+    if (chunk.length % 4 !== 0) throw new Error(`Invalid base64 length in chunk ${chunkIndex}`);
     for (let i = 0; i < chunk.length; i += 4) {
       const a = DECODE[chunk.charCodeAt(i)];
       const b = DECODE[chunk.charCodeAt(i + 1)];
@@ -34,7 +34,7 @@ function* decodeChunks(chunks, totalBytes, workPerYield) {
     chunks[chunkIndex] = null;
     yield;
   }
-  if (offset !== totalBytes) throw new Error(`Số byte Veyra2 không khớp: ${offset}/${totalBytes}`);
+  if (offset !== totalBytes) throw new Error(`Veyra2 byte count mismatch: ${offset}/${totalBytes}`);
   return bytes;
 }
 export function* loadModel(options = {}) {
@@ -63,7 +63,7 @@ export function* loadModel(options = {}) {
       meta.kvWidth === DIM.kvHeads * DIM.headSize && meta.hiddenSize === DIM.hidden &&
       Array.isArray(meta.ids) && meta.ids.length > 0;
     if (!valid) {
-      console.warn("[Veyra2] Cache tiền tố không khớp model; tính prompt bình thường.");
+      console.warn("[Veyra2] Prefix snapshot differs from model; computing prompt normally.");
     } else {
       const prefix = yield* decodeChunks(PREFIX_CHUNKS, meta.bytes, workPerYield);
       const width = meta.ids.length * meta.kvWidth;

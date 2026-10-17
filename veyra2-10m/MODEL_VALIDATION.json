@@ -1,6 +1,6 @@
 {
-  "environment": "Node trên PC; chưa chạy Minecraft",
-  "mode": "greedy INT8, không chèn thông tin tác giả vào prompt",
+  "environment": "Node on PC; not tested in Minecraft",
+  "mode": "greedy INT8; no author information inserted into the prompt",
   "passed": 12,
   "total": 12,
   "results": [
@@ -19,18 +19,18 @@
       "generatedTokens": 20
     },
     {
-      "question": "Ai phát triển addon Minecraft Bedrock này?",
+      "question": "Who developed this Minecraft addon?",
       "expected": "ILwHee",
-      "answer": "ILwHee làm addon. Veyra AI tạo model gốc.",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
       "passed": true,
-      "generatedTokens": 30
+      "generatedTokens": 20
     },
     {
-      "question": "Cho tôi biết người làm addon là ai.",
+      "question": "Tell me who made this addon.",
       "expected": "ILwHee",
-      "answer": "ILwHee làm addon. Veyra AI tạo model gốc.",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
       "passed": true,
-      "generatedTokens": 30
+      "generatedTokens": 20
     },
     {
       "question": "Where can I watch the addon creator on YouTube?",
@@ -47,7 +47,7 @@
       "generatedTokens": 21
     },
     {
-      "question": "Tôi muốn xem kênh YouTube của người làm addon.",
+      "question": "Give me the addon developer YouTube URL.",
       "expected": "https://www.youtube.com/@Datkiri001",
       "answer": "https://www.youtube.com/@Datkiri001",
       "passed": true,
@@ -61,11 +61,11 @@
       "generatedTokens": 20
     },
     {
-      "question": "Ai là tác giả mô hình AI gốc của addon?",
+      "question": "Who created the original AI model used here?",
       "expected": "Veyra AI",
-      "answer": "ILwHee làm addon. Veyra AI tạo model gốc.",
+      "answer": "ILwHee made the addon. Veyra AI made the model.",
       "passed": true,
-      "generatedTokens": 30
+      "generatedTokens": 20
     },
     {
       "question": "Did the addon creator also train the original model?",
@@ -100,14 +100,14 @@
     },
     {
       "question": "What is 1+1?",
-      "answer": "1+1=2."
+      "answer": "A+1=2."
     },
     {
       "question": "What can I build in Minecraft?",
-      "answer": "You could build a house, a farm, or a castle."
+      "answer": "You could build a small house, a farm, or a castle."
     }
   ],
-  "maxLogitError": 0.0000133514404296875,
+  "maxLogitError": 0.000012159347534179688,
   "defaultSamplingPassed": 12,
   "defaultSamplingTotal": 12,
   "sampled": [

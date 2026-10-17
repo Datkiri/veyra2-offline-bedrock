@@ -8,7 +8,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 ROOT=Path(__file__).resolve().parent.parent
 parser=argparse.ArgumentParser()
 parser.add_argument('--base',type=Path,default=ROOT/'tools/checkpoints/veyra2-10m')
-parser.add_argument('--model',type=Path,default=ROOT/'tools/checkpoints/veyra2-ilwhee-sft')
+parser.add_argument('--model',type=Path,default=ROOT/'tools/checkpoints/veyra2-ilwhee-en-sft')
 args=parser.parse_args()
 torch.set_num_threads(4)
 tokenizer=AutoTokenizer.from_pretrained(args.base,local_files_only=True)

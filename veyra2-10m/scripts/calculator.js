@@ -1,26 +1,26 @@
                                                                                   
 export function calculateReply(message) {
   let expression = String(message).trim().replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-");
-  expression = expression.replace(/^(?:what(?:'s|\s+is)\s+the\s+result\s+of|what(?:'s|\s+is)|calculate|compute|solve|tính|tinh|kết quả của|ket qua cua)\s+/i, "");
+  expression = expression.replace(/^(?:what(?:'s|\s+is)\s+the\s+result\s+of|what(?:'s|\s+is)|calculate|calc|compute|solve)\s+/i, "");
   expression = expression.replace(/\s*(?:=\s*\??|\?)\s*$/, "").trim();
   if (!expression || expression.length > 128 || !/^[\d.\s()+*/-]+$/.test(expression) || !/[+*/-]/.test(expression)) return null;
   const tokens = expression.match(/\d+(?:\.\d*)?|\.\d+|[()+*/-]/g) || [];
   if (tokens.join("") !== expression.replace(/\s/g, "")) return null;
   let at = 0, depth = 0;
   function bounded(value) {
-    if (!Number.isFinite(value) || Math.abs(value) > 1e12) throw new Error("Kết quả vượt phạm vi hỗ trợ");
+    if (!Number.isFinite(value) || Math.abs(value) > 1e12) throw new Error("Result outside supported range");
     return value;
   }
   function atom() {
-    if (++depth > 16) throw new Error("Biểu thức lồng quá sâu");
+    if (++depth > 16) throw new Error("Expression too deeply nested");
     let value;
     const token = tokens[at++];
     if (token === "+" || token === "-") value = (token === "-" ? -1 : 1) * atom();
     else if (token === "(") {
       value = sum();
-      if (tokens[at++] !== ")") throw new Error("Dấu ngoặc chưa cân bằng");
+      if (tokens[at++] !== ")") throw new Error("Unbalanced parentheses");
     } else {
-      if (!token || !/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(token)) throw new Error("Cần một số");
+      if (!token || !/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(token)) throw new Error("Expected a number");
       value = Number(token);
     }
     depth--;
@@ -30,7 +30,7 @@ export function calculateReply(message) {
     let value = atom();
     while (tokens[at] === "*" || tokens[at] === "/") {
       const op = tokens[at++], rhs = atom();
-      if (op === "/" && rhs === 0) throw new Error("Không thể chia cho 0");
+      if (op === "/" && rhs === 0) throw new Error("Cannot divide by zero");
       value = bounded(op === "*" ? value * rhs : value / rhs);
     }
     return value;
@@ -48,7 +48,7 @@ export function calculateReply(message) {
     if (at !== tokens.length) return null;
     return { expression, text: String(Number(value.toPrecision(12))) };
   } catch (error) {
-    if (error.message === "Không thể chia cho 0" || error.message === "Kết quả vượt phạm vi hỗ trợ")
+    if (error.message === "Cannot divide by zero" || error.message === "Result outside supported range")
       return { expression, text: error.message + "." };
     return null;
   }

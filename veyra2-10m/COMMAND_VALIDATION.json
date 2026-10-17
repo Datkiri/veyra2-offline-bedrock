@@ -5,5 +5,5 @@
   "noSessionWhenOff": true,
   "calculatorWithoutModel": true,
   "toggleWhileBusy": true,
-  "vietnameseHelp": true
+  "englishHelp": true
 }

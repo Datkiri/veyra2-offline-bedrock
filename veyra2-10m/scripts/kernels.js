@@ -12,7 +12,7 @@ export const withinTolerance = (a, b) => Number.isFinite(a) && Number.isFinite(b
   Math.abs(a - b) <= 1e-5 + 1e-5 * Math.max(Math.abs(a), Math.abs(b));
 export function demoteKernel(matrix, reason) {
   selected[shapeOf(matrix)] = "scalar";
-  console.warn(`[Veyra2] ${shapeOf(matrix)} quay về kernel scalar: ${reason}`);
+  console.warn(`[Veyra2] ${shapeOf(matrix)} reverted to scalar: ${reason}`);
 }
 export function scalarRows(input, matrix, output, start, end) {
   const { values, scales, cols } = matrix;

@@ -47,7 +47,7 @@ function* linearInto(input, matrix, output, counter) {
     if (row === 0 && mode !== "scalar") {
       scalarRows(input, matrix, VERIFY_ROW, 0, 1);
       if (!withinTolerance(VERIFY_ROW[0], output[0])) {
-        demoteKernel(matrix, "hàng đầu không khớp kernel scalar");
+        demoteKernel(matrix, "first-row result differed from scalar");
         mode = "scalar";
         scalarRows(input, matrix, output, row, end);
       }
@@ -164,8 +164,8 @@ function layerTensor(tensors, layer, suffix) {
 
 function* forwardToken(tensors, tokenId, position, cache, counter, needHidden = true) {
   const embedding = tensors["model.embed_tokens.weight"];
-  if (tokenId < 0 || tokenId >= DIM.vocab) throw new Error(`ID token nằm ngoài từ vựng Veyra2: ${tokenId}`);
-  if (position >= cache.limit) throw new Error(`Vượt cửa sổ ${cache.limit} token`);
+  if (tokenId < 0 || tokenId >= DIM.vocab) throw new Error(`Token id outside Veyra2 vocab: ${tokenId}`);
+  if (position >= cache.limit) throw new Error(`Context limit ${cache.limit} exceeded`);
   embeddingRow(embedding, tokenId, S.hidden);
   prepareRope(position);
 
@@ -215,7 +215,7 @@ function* forwardToken(tensors, tokenId, position, cache, counter, needHidden = 
 }
 
 function createCache(limit) {
-  if (limit > S.scores.length) throw new Error(`Cửa sổ không được vượt ${S.scores.length} token`);
+  if (limit > S.scores.length) throw new Error(`Context limit cannot exceed ${S.scores.length}`);
   const keys = [];
   const values = [];
   const length = limit * KV_WIDTH;
@@ -287,7 +287,7 @@ export function buildPrompt(message, previousTurns = [], options = {}) {
   const prefix = SYSTEM_PREFIX + (system ? `\n\n${system}` : "") + "<|im_end|>\n";
   while (turns.length && encode(prefix + turns.join("") + current).length > maxPromptTokens) turns.shift();
   const prompt = prefix + turns.join("") + current;
-  if (encode(prompt).length > maxPromptTokens) throw new Error("Câu hỏi quá dài so với cửa sổ token Veyra2");
+  if (encode(prompt).length > maxPromptTokens) throw new Error("Message is too long for Veyra2 context");
   return prompt;
 }
 
@@ -296,7 +296,7 @@ function* generateInner(tensors, prompt, options) {
   const onProgress = typeof options.onProgress === "function" ? options.onProgress : null;
   const promptIds = encode(prompt);
   const contextLimit = options.contextLimit ?? 256;
-  if (!promptIds.length || promptIds.length > contextLimit) throw new Error("Prompt rỗng hoặc vượt cửa sổ token Veyra2");
+  if (!promptIds.length || promptIds.length > contextLimit) throw new Error("Prompt exceeds Veyra2 context limit");
   let previous = options.session;
   const canReuse = previous?.cache?.limit === contextLimit && Array.isArray(previous.ids) && previous.hidden?.length === H;
   const cache = canReuse ? previous.cache : createCache(contextLimit);

@@ -14,19 +14,19 @@ drain(generate(tensors,reference.prompt,{maxNewTokens:2,temperature:0,topK:1,rep
 let maxLogitError=0;
 for(let step=0;step<2;step++)for(let i=0;i<logits[step].length;i++)
   maxLogitError=Math.max(maxLogitError,Math.abs(logits[step][i]-(step?reference.continuationLogits:reference.logits)[i]));
-assert(maxLogitError<0.001,'Logits không khớp Transformers INT8');
+assert(maxLogitError<0.001,'Logits do not match Transformers INT8');
 const options={maxNewTokens:CONFIG.maxReplyTokens,temperature:0,topK:1,repetitionPenalty:1.08,
   contextLimit:CONFIG.contextLimit,macPerYield:1e6};
 const cases=[
   ['Who is the author behind this Minecraft Bedrock addon?','ILwHee'],
   ['Who programmed the addon that I am using?','ILwHee'],
-  ['Ai phát triển addon Minecraft Bedrock này?','ILwHee'],
-  ['Cho tôi biết người làm addon là ai.','ILwHee'],
+  ['Who developed this Minecraft addon?','ILwHee'],
+  ['Tell me who made this addon.','ILwHee'],
   ['Where can I watch the addon creator on YouTube?','https://www.youtube.com/@Datkiri001'],
   ['Share ILwHee channel address.','https://www.youtube.com/@Datkiri001'],
-  ['Tôi muốn xem kênh YouTube của người làm addon.','https://www.youtube.com/@Datkiri001'],
+  ['Give me the addon developer YouTube URL.','https://www.youtube.com/@Datkiri001'],
   ['Who is the creator of the original Veyra2 language model?','Veyra AI'],
-  ['Ai là tác giả mô hình AI gốc của addon?','Veyra AI'],
+  ['Who created the original AI model used here?','Veyra AI'],
   ['Did the addon creator also train the original model?','Veyra AI'],
   ['Where is the original model hosted on Hugging Face?','https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct'],
   ['Which open source license applies to this model?','Apache'],
@@ -41,15 +41,15 @@ for(const [question,expected]of cases){
 const prompt=buildPrompt('Who made this addon?');
 const seeded=drain(generate(tensors,prompt,options));
 const computed=drain(generate(tensors,prompt,{...options,usePrefixCache:false}));
-assert.deepEqual(seeded.ids,computed.ids,'Cache tiền tố làm đổi token');
+assert.deepEqual(seeded.ids,computed.ids,'Prefix cache changed tokens');
 const bench=drain(benchKernels(tensors,{maxMs:30000}));
 for(const value of Object.values(bench.verified))assert(value.scalar&&value.unrolled&&value.tile4);
 const selected=drain(generate(tensors,prompt,options));
-assert.deepEqual(selected.ids,seeded.ids,'Kernel làm đổi token');
+assert.deepEqual(selected.ids,seeded.ids,'Kernel changed tokens');
 const followup=buildPrompt('What is the channel link?',[{user:'Who made this addon?',bot:seeded.text}]);
 const reused=drain(generate(tensors,followup,{...options,session:selected.session}));
 const fresh=drain(generate(tensors,followup,options));
-assert.deepEqual(reused.ids,fresh.ids,'Cache hội thoại làm đổi token');
+assert.deepEqual(reused.ids,fresh.ids,'Conversation cache changed tokens');
 const baseline=['Hi!','What color is the sky?','What is 1+1?','What can I build in Minecraft?'].map(question=>{
   const r=drain(generate(tensors,buildPrompt(question),options));return {question,answer:r.text};
 });
@@ -68,10 +68,10 @@ try{
     sampled.push({question,answer:r.text,passed:r.text.toLowerCase().includes(expected.toLowerCase())});
   }
 }finally{Math.random=originalRandom;}
-const report={environment:'Node trên PC; chưa chạy Minecraft',mode:'greedy INT8, không chèn thông tin tác giả vào prompt',
+const report={environment:'Node on PC; not tested in Minecraft',mode:'greedy INT8; no author information inserted into the prompt',
   passed:results.filter(x=>x.passed).length,total:results.length,results,baseline,maxLogitError,
   defaultSamplingPassed:sampled.filter(x=>x.passed).length,defaultSamplingTotal:sampled.length,sampled,
   kernelShapes:Object.keys(bench.verified).length,prefixCacheParity:true,historyCacheParity:true};
-writeFileSync(new URL('../veyra2-10m/KIEM_TRA_MODEL.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
-assert.equal(report.passed,report.total,'Còn câu attribution chưa đạt');
-assert.equal(report.defaultSamplingPassed,report.defaultSamplingTotal,'Sampling mặc định chưa đạt');
+writeFileSync(new URL('../veyra2-10m/MODEL_VALIDATION.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
+assert.equal(report.passed,report.total,'Some attribution cases failed');
+assert.equal(report.defaultSamplingPassed,report.defaultSamplingTotal,'Default sampling checks failed');

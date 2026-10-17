@@ -24,7 +24,7 @@ function tell(player, text) {
   try {
     if (player?.isValid) player.sendMessage("§bAI:§r " + text);
   } catch (error) {
-    console.warn("[Veyra2] Không gửi được câu trả lời: " + error);
+    console.warn("[Veyra2] Could not send chat reply: " + error);
   }
 }
 
@@ -37,17 +37,17 @@ function* loadWeights() {
   const started = now();
   try {
     tensors = yield* loadModel({ workPerYield: CONFIG.workPerYield });
-    console.warn(`[Veyra2] Đã nạp model sau ${(now() - started).toFixed(0)}ms; trọng số INT8=${modelBytes()}`);
-    console.warn(`[Veyra2] Cache tiền tố ${tensors.prefixSeed?.ids.length || 0} token; ${(tensors.prefixSeed?.bytes || 0) / 1024} KiB`);
+    console.warn(`[Veyra2] Model ready in ${(now() - started).toFixed(0)}ms; INT8 bytes=${modelBytes()}`);
+    console.warn(`[Veyra2] Prefix snapshot ${tensors.prefixSeed?.ids.length || 0} tokens; ${(tensors.prefixSeed?.bytes || 0) / 1024} KiB`);
     try {
       const report = yield* calibrateKernels(tensors, { maxMs: CONFIG.kernelCalibrationMs });
-      console.warn(`[Veyra2] Chọn kernel ${report.elapsedMs.toFixed(0)}ms; ${kernelSummary()}`);
+      console.warn(`[Veyra2] Kernel calibration ${report.elapsedMs.toFixed(0)}ms; ${kernelSummary()}`);
     } catch (error) {
-      console.warn(`[Veyra2] Không chọn được kernel; dùng scalar: ${error}`);
+      console.warn(`[Veyra2] Kernel calibration unavailable; using scalar: ${error}`);
     }
   } catch (error) {
     loadError = String(error);
-    console.warn("[Veyra2] Nạp model thất bại: " + loadError);
+    console.warn("[Veyra2] Model load failed: " + loadError);
   } finally {
     loading = false;
     system.run(startNext);
@@ -59,11 +59,11 @@ function* runKernelBench(player) {
   try {
     const report = yield* benchKernels(tensors, { maxMs: CONFIG.kernelBenchmarkMs });
     const ticks = system.currentTick - startedTick;
-    tell(player, `Đo kernel ${report.elapsedMs.toFixed(0)}ms / ${ticks} ticks · ${kernelSummary()}`);
-    console.warn(`[Veyra2] Kết quả đo kernel: ${JSON.stringify({ ...report, ticks })}`);
+    tell(player, `Kernel benchmark ${report.elapsedMs.toFixed(0)}ms / ${ticks} ticks · ${kernelSummary()}`);
+    console.warn(`[Veyra2] Kernel benchmark: ${JSON.stringify({ ...report, ticks })}`);
   } catch (error) {
-    console.warn(`[Veyra2] Đo kernel thất bại: ${error}`);
-    tell(player, "Đo kernel failed. Check the Content Log.");
+    console.warn(`[Veyra2] Kernel benchmark failed: ${error}`);
+    tell(player, "Kernel benchmark failed. Check the Content Log.");
   } finally {
     resetWhileBusy.delete(player?.id);
     activeProgress = null;
@@ -75,12 +75,12 @@ function* runKernelBench(player) {
 }
 
 function modelBytes() {
-  if (!tensors) return "chưa nạp";
+  if (!tensors) return "unavailable";
   let bytes = 0;
   for (const value of Object.values(tensors)) {
     bytes += value.kind === "q8" ? value.values.byteLength + value.scales.byteLength : value.byteLength;
   }
-  return `${(bytes / 1048576).toFixed(1)} MiB trọng số đã giải mã`;
+  return `${(bytes / 1048576).toFixed(1)} MiB decoded weights`;
 }
 
 function* answer(request) {
@@ -121,18 +121,18 @@ function* answer(request) {
     }
     const text = String(result.text || "").trim();
     if (text) tell(request.player, text);
-    else tell(request.player, "Lần này model chưa tạo được câu trả lời.");
+    else tell(request.player, "I could not form an answer this time.");
     if (keepContext && contextEnabled(request.player.id) && !resetWhileBusy.has(request.player.id)) {
       prior.push({ user: request.message, bot: text });
       history.set(request.player.id, prior.slice(-CONFIG.historyTurns));
     }
     lastStats = { historyEnabled: keepContext, ...result.stats, wallMs: now() - started, ticks: system.currentTick - startedTick, player: request.player.name };
     const stats = lastStats;
-    console.warn(`[Veyra2] ${stats.promptTokens} token vào (${stats.reusedTokens} đã cache, ${stats.seededTokens} từ tiền tố, ${stats.computedPromptTokens} đã tính) + ${stats.generatedTokens} token ra; token đầu=${stats.firstTokenMs?.toFixed(0) ?? "n/a"}ms đọc=${stats.prefillMs.toFixed(0)}ms sinh=${stats.decodeMs.toFixed(0)}ms tổng=${stats.totalMs.toFixed(0)}ms; ticks=${stats.ticks} yields=${stats.yields}; skipped-final=${stats.skippedFinalBlocks}; kernels=${kernelSummary()}`);
+    console.warn(`[Veyra2] ${stats.promptTokens} prompt (${stats.reusedTokens} cached, ${stats.seededTokens} snapshot, ${stats.computedPromptTokens} computed) + ${stats.generatedTokens} generated; first=${stats.firstTokenMs?.toFixed(0) ?? "n/a"}ms prefill=${stats.prefillMs.toFixed(0)}ms decode=${stats.decodeMs.toFixed(0)}ms total=${stats.totalMs.toFixed(0)}ms; ticks=${stats.ticks} yields=${stats.yields}; skipped-final=${stats.skippedFinalBlocks}; kernels=${kernelSummary()}`);
   } catch (error) {
     sessions.delete(request.player?.id);
-    console.warn("[Veyra2] Sinh câu trả lời thất bại: " + error);
-    tell(request.player, "Chưa thể trả lời. Xem nhật ký nội dung để biết chi tiết.");
+    console.warn("[Veyra2] Generation failed: " + error);
+    tell(request.player, "I could not answer right now. Check the Content Log for details.");
   } finally {
     resetWhileBusy.delete(request.player?.id);
     activeProgress = null;
@@ -147,7 +147,7 @@ function startNext() {
   if (busy || loading || !queue.length) return;
   const request = queue.shift();
   if (!request.player?.isValid) { system.run(startNext); return; }
-  if (loadError) { tell(request.player, "Không nạp được model. Xem nhật ký nội dung."); system.run(startNext); return; }
+  if (loadError) { tell(request.player, "Model loading failed. Check the Content Log."); system.run(startNext); return; }
   if (!tensors) {
     loading = true;
     queue.unshift(request);
@@ -155,7 +155,7 @@ function startNext() {
     return;
   }
   if (request.message === "__load__") {
-    tell(request.player, `Đã nạp Veyra2 (${modelBytes()}).`);
+    tell(request.player, `Veyra2 loaded (${modelBytes()}).`);
     system.run(startNext);
     return;
   }
@@ -173,35 +173,32 @@ function startNext() {
 
 function command(player, body) {
   const input = body.trim();
-  const normalized = input.normalize("NFD").replace(/\p{M}/gu, "").replace(/[đĐ]/g, "d").toLowerCase();
-  const aliases = new Map([["trogiup", "help"], ["tro giup", "help"], ["tai", "load"],
-    ["trangthai", "status"], ["trang thai", "status"], ["thongke", "stats"],
-    ["thong ke", "stats"], ["huy", "cancel"], ["xoa", "reset"], ["do kernel", "bench kernels"]]);
-  const lower = aliases.get(normalized) || input.toLowerCase();
-  const contextCommand = /^(?:context|ngucanh|ngu canh)(?:\s+(on|off|status|bat|tat|trang thai))?$/.exec(normalized);
+  const lower = input.toLowerCase();
+  const contextCommand = /^context(?:\s+(on|off|status))?$/.exec(lower);
   if (contextCommand) {
     const value = contextCommand[1];
-    if (value === "on" || value === "bat" || value === "off" || value === "tat") {
-      const enabled = value === "on" || value === "bat";
+    if (value === "on" || value === "off") {
+      const enabled = value === "on";
       contextFlags.set(player.id, enabled);
       history.delete(player.id);
       sessions.delete(player.id);
       if (activePlayerId === player.id) resetWhileBusy.add(player.id);
-      tell(player, `Đã ${enabled ? "bật" : "tắt"} ngữ cảnh và xóa lịch sử cũ. Áp dụng từ câu hỏi tiếp theo.`);
+      tell(player, `Context is now ${enabled ? "ON" : "OFF"}. Previous history cleared. Applies to your next question.`);
     } else {
-      tell(player, `Ngữ cảnh: ${contextEnabled(player.id) ? "bật" : "tắt"}. Dùng !ai ngucanh bat hoặc !ai ngucanh tat. Mặc định: tắt.`);
+      tell(player, `Conversation context: ${contextEnabled(player.id) ? "ON" : "OFF"}. Use !ai context on or !ai context off. Default: OFF.`);
     }
     return;
   }
   if (!input || lower === "help") {
-    player.sendMessage("§bVeyra2:§r !ai <câu hỏi> · !ai tai · !ai trangthai · !ai thongke · !ai do kernel · !ai huy · !ai xoa");
-    player.sendMessage("§7Ngữ cảnh mặc định tắt: !ai ngucanh bat | !ai ngucanh tat | !ai ngucanh. Các lệnh tiếng Anh cũ vẫn dùng được.");
-    player.sendMessage("§7Veyra2-Blueberry-10M-Instruct ngoại tuyến; model trả lời chủ yếu bằng tiếng Anh; trọng số INT8.");
+    player.sendMessage("§bVeyra2:§r !ai <message> · !ai load · !ai status · !ai stats · !ai bench kernels · !ai cancel · !ai reset");
+    player.sendMessage("§7English-only Veyra2-Blueberry-10M-Instruct, offline INT8 chat. Addon by ILwHee; original model by Veyra AI.");
+    player.sendMessage("§7Conversation context defaults to OFF: !ai context on | !ai context off | !ai context status.");
+    player.sendMessage("§7Calculator: !ai calc (2+3)*4. Clear conversation history with !ai reset.");
     return;
   }
   if (lower === "cancel") {
     if (activePlayerId !== player.id || activeJobId === null) {
-      tell(player, "Bạn không có câu trả lời nào đang chạy để hủy.");
+      tell(player, "You have no active reply to cancel.");
       return;
     }
     system.clearJob(activeJobId);
@@ -211,7 +208,7 @@ function command(player, body) {
     resetWhileBusy.delete(player.id);
     busy = false;
     activePlayerId = null;
-    tell(player, "Đã hủy câu trả lời đang chạy.");
+    tell(player, "Canceled the current reply.");
     system.run(startNext);
     return;
   }
@@ -219,48 +216,48 @@ function command(player, body) {
     if (activePlayerId === player.id) resetWhileBusy.add(player.id);
     history.delete(player.id);
     sessions.delete(player.id);
-    tell(player, "Đã xóa lịch sử hội thoại.");
+    tell(player, "Conversation history cleared.");
     return;
   }
   if (lower === "load") {
-    if (tensors) { tell(player, "Model đã được nạp."); return; }
-    if (loading) { tell(player, "Đang nạp model."); return; }
+    if (tensors) { tell(player, "Model is already loaded."); return; }
+    if (loading) { tell(player, "Model is loading."); return; }
     queue.push({ player, message: "__load__" });
     startNext();
     return;
   }
   if (lower === "bench kernels") {
-    if (queue.length >= 4) { tell(player, "Model đang bận. Hãy thử lại sau."); return; }
-    if (activePlayerId === player.id || queue.some(item => item.player.id === player.id)) { tell(player, "Yêu cầu trước của bạn vẫn đang chờ."); return; }
+    if (queue.length >= 4) { tell(player, "The model is busy. Try again in a moment."); return; }
+    if (activePlayerId === player.id || queue.some(item => item.player.id === player.id)) { tell(player, "Your previous request is still queued."); return; }
     queue.push({ player, message: "__bench_kernels__" });
     startNext();
     return;
   }
   if (lower === "status") {
-    tell(player, `Ngữ cảnh hội thoại: ${contextEnabled(player.id) ? "bật" : "tắt"}.`);
-    tell(player, `Veyra2-Blueberry-10M-Instruct · ${tensors ? "đã nạp" : loading ? "đang nạp" : "chưa nạp"}${loadError ? " · lỗi nạp model" : ""}`);
-    tell(player, `INT8 tile4 · ${modelBytes()} · cache tiền tố ${tensors?.prefixSeed?.ids.length || 0} token · cửa sổ token ${CONFIG.contextLimit} · giới hạn trả lời ${CONFIG.maxReplyTokens} token · hàng đợi ${queue.length} · phiên KV ${sessions.size}`);
+    tell(player, `Conversation context: ${contextEnabled(player.id) ? "ON" : "OFF"}. Default: OFF.`);
+    tell(player, `Veyra2-Blueberry-10M-Instruct · ${tensors ? "loaded" : loading ? "loading" : "not loaded"}${loadError ? " · load error" : ""}`);
+    tell(player, `INT8 tile4 · ${modelBytes()} · prefix snapshot ${tensors?.prefixSeed?.ids.length || 0} tokens · context ${CONFIG.contextLimit} · reply cap ${CONFIG.maxReplyTokens} tokens · queue ${queue.length} · KV sessions ${sessions.size}`);
     if (activeProgress) {
-      if (activeProgress.phase === "bench") tell(player, `Đang đo kernel; đã chạy ${((now() - activeProgress.started) / 1000).toFixed(0)}s.`);
-      else tell(player, `${activeProgress.phase === "prefill" ? "Đọc" : "Trả lời"} ${activeProgress.done}/${activeProgress.total}; ${(activeProgress.counter?.macs / 1000000 || 0).toFixed(0)}M MAC; đã chạy ${((now() - activeProgress.started) / 1000).toFixed(0)}s.`);
+      if (activeProgress.phase === "bench") tell(player, `Kernel benchmark running; elapsed ${((now() - activeProgress.started) / 1000).toFixed(0)}s.`);
+      else tell(player, `${activeProgress.phase} ${activeProgress.done}/${activeProgress.total}; ${(activeProgress.counter?.macs / 1000000 || 0).toFixed(0)}M MAC; elapsed ${((now() - activeProgress.started) / 1000).toFixed(0)}s.`);
     }
-    tell(player, `Kernel ${kernelSummary()}`);
+    tell(player, `Kernels ${kernelSummary()}`);
     return;
   }
   if (lower === "stats") {
-    if (!lastStats) { tell(player, "Chưa có câu trả lời hoàn tất để thống kê."); tell(player, `Kernel ${kernelSummary()}`); return; }
+    if (!lastStats) { tell(player, "No completed reply to report yet."); tell(player, `Kernels ${kernelSummary()}`); return; }
     if (lastStats.source === "calculator") {
-      tell(player, `Bộ tính JavaScript: ${lastStats.expression}; không cần suy luận model.`);
+      tell(player, `JavaScript calculator: ${lastStats.expression}; no model inference.`);
       return;
     }
     const stats = lastStats;
-    tell(player, `${stats.promptTokens} token vào (${stats.reusedTokens} đã cache, ${stats.seededTokens} từ tiền tố, ${stats.computedPromptTokens} đã tính) + ${stats.generatedTokens} token ra; token đầu ${stats.firstTokenMs === null ? "n/a" : (stats.firstTokenMs / 1000).toFixed(2) + "s"}; đọc ${(stats.prefillMs / 1000).toFixed(2)}s; sinh ${(stats.decodeMs / 1000).toFixed(2)}s; tổng ${(stats.totalMs / 1000).toFixed(2)}s; ${stats.ticks} ticks; ${stats.yields} yields.`);
-    tell(player, `Kernel ${kernelSummary()}`);
+    tell(player, `${stats.promptTokens} prompt (${stats.reusedTokens} cached, ${stats.seededTokens} snapshot, ${stats.computedPromptTokens} computed) + ${stats.generatedTokens} generated; first ${stats.firstTokenMs === null ? "n/a" : (stats.firstTokenMs / 1000).toFixed(2) + "s"}; prefill ${(stats.prefillMs / 1000).toFixed(2)}s; decode ${(stats.decodeMs / 1000).toFixed(2)}s; total ${(stats.totalMs / 1000).toFixed(2)}s; ${stats.ticks} ticks; ${stats.yields} yields.`);
+    tell(player, `Kernels ${kernelSummary()}`);
     return;
   }
-  if (input.length > CONFIG.maxChatLength) { tell(player, `Giới hạn ${CONFIG.maxChatLength} ký tự cho mỗi câu hỏi.`); return; }
-  if (queue.length >= 4) { tell(player, "Model đang bận. Hãy thử lại sau."); return; }
-  if (activePlayerId === player.id || queue.some(item => item.player.id === player.id)) { tell(player, "Câu hỏi trước của bạn vẫn đang chờ."); return; }
+  if (input.length > CONFIG.maxChatLength) { tell(player, `Keep messages under ${CONFIG.maxChatLength} characters.`); return; }
+  if (queue.length >= 4) { tell(player, "The model is busy. Try again in a moment."); return; }
+  if (activePlayerId === player.id || queue.some(item => item.player.id === player.id)) { tell(player, "Your previous message is still queued."); return; }
   const math = calculateReply(input);
   if (math) {
     tell(player, math.text);
@@ -284,27 +281,27 @@ world.beforeEvents.chatSend.subscribe(event => {
   system.run(() => {
     try { if (sender?.isValid) command(sender, body); }
     catch (error) {
-      console.warn("[Veyra2] Lệnh thất bại: " + error);
-      if (sender?.isValid) sender.sendMessage("§cVeyra2:§r Lệnh thất bại. Xem nhật ký nội dung.");
+      console.warn("[Veyra2] Command failed: " + error);
+      if (sender?.isValid) sender.sendMessage("§cVeyra2:§r Command failed. Check the Content Log.");
     }
   });
 });
 
-console.warn("[Veyra2] Addon 1.0.2 đã sẵn sàng (INT8 tile4 + cache tiền tố). Gõ !ai trogiup.");
+console.warn("[Veyra2] English-only chat pack 1.0.3 ready (INT8 tile4 + prefix snapshot). Type !ai help.");
 
 system.runInterval(() => {
   const progress = activeProgress;
   if (!progress) return;
   const elapsed = ((now() - progress.started) / 1000).toFixed(0);
-  const label = progress.phase === "prefill" ? "đọc" : progress.phase === "bench" ? "đo kernel" : "trả lời";
+  const label = progress.phase === "prefill" ? "reading" : progress.phase === "bench" ? "bench" : "reply";
   const work = ((progress.counter?.macs || 0) / 1000000).toFixed(0);
   try {
     if (progress.player?.isValid) progress.player.onScreenDisplay.setActionBar(`§bAI §7${label}${progress.phase === "bench" ? "" : ` ${progress.done}/${progress.total}`} · ${elapsed}s`);
   } catch (error) {
-                                                                             
+                                                                                
   }
   if (now() - progress.lastLoggedAt >= 15000) {
     progress.lastLoggedAt = now();
-    console.warn(`[Veyra2] ${label} ${progress.done}/${progress.total}; ${work}M MAC; ${elapsed}s đã chạy.`);
+    console.warn(`[Veyra2] ${label} ${progress.done}/${progress.total}; ${work}M MAC; ${elapsed}s elapsed.`);
   }
 }, 20);

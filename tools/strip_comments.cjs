@@ -19,7 +19,7 @@ function visit(folder) {
       result = result.slice(0, comment.start) + result.slice(comment.start, comment.end).replace(/[^\r\n]/g, ' ') + result.slice(comment.end);
     const remaining = [];
     acorn.parse(result, { ...options, onComment: remaining });
-    if (remaining.length) throw Error('Còn chú thích: ' + name);
+    if (remaining.length) throw Error('Comments remain: ' + name);
     fs.writeFileSync(name, result);
     count += comments.length;
   }

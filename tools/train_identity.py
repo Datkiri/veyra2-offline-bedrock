@@ -32,44 +32,53 @@ class LoRALinear(nn.Module):
 
 def identity_data():
     records = []
-    groups = [
-      (['Who made this addon?', 'Who created this Minecraft addon?', 'Who developed the addon?',
-        'Name the author of this addon.', 'Who built this Bedrock addon?', 'Who is the addon creator?',
-        'Tell me who made the addon.', 'What is the addon author name?', 'Who wrote this addon?',
-        'Which person developed this addon?', 'Is the addon by ILwHee?', 'Who is responsible for the addon?'],
-       'ILwHee made this addon.'),
-      (['What is the addon author YouTube?', 'Give me the YouTube channel of ILwHee.',
-        'Where is the addon creator on YouTube?', 'Show the addon author channel link.',
-        'What is ILwHee YouTube link?', 'Link to the addon developer channel.',
-        'Where can I find ILwHee videos?', 'Give the addon YouTube URL.'],
-       'https://www.youtube.com/@Datkiri001'),
-      (['Who made the AI model?', 'Who is the original model author?', 'Who created Veyra2?',
-        'Who trained the original Veyra2 model?', 'Name the original AI developer.',
-        'Did ILwHee create the original model?', 'Is ILwHee the model author?'],
-       'Veyra AI made the model. ILwHee made the addon.'),
-      (['What model does this addon use?', 'Which AI model is inside the addon?',
-        'Tell me the model name.', 'Name your original model.'],
-       'Veyra2-Blueberry-10M-Instruct by Veyra AI.'),
-      (['Where can I find the original model?', 'Give me the original model source.',
-        'What is the Hugging Face model link?', 'Show the original model download URL.'],
-       'https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct'),
-      (['What license is used?', 'Which license covers this addon and model?',
-        'What is the model license?', 'Tell me the addon license.'], 'Apache 2.0.'),
-      (['Who is ILwHee?', 'What did ILwHee make?', 'Tell me about ILwHee.'],
-       'ILwHee is the addon creator, not the original model author.'),
-      (['Ai làm addon này?', 'Tác giả addon là ai?', 'Người tạo addon này là ai?',
-        'Ai viết addon Minecraft này?', 'Addon này do ai làm?', 'Cho biết tác giả addon.'],
-       'Người làm addon là ILwHee.'),
-      (['Link YouTube của tác giả addon là gì?', 'Kênh YouTube của ILwHee là gì?',
-        'Cho tôi link YouTube của ILwHee.', 'YouTube của người làm addon?'],
-       'https://www.youtube.com/@Datkiri001'),
-      (['Ai tạo model gốc?', 'Tác giả model là ai?', 'ILwHee có tạo model gốc không?',
-        'Ai tạo mô hình AI gốc?', 'Mô hình này do ai tạo ra?', 'Ai phát triển mô hình gốc?',
-        'Tác giả của mô hình AI là ai?', 'Người sáng tạo mô hình ngôn ngữ gốc là ai?',
-        'Ai viết model Veyra2?', 'Mô hình Veyra2 là của ai?',
-        'Ai là chủ mô hình gốc?', 'Model AI này của tác giả nào?',
-        'Người huấn luyện mô hình Veyra2 là ai?'], 'Veyra AI tạo model gốc. ILwHee làm addon.'),
-    ]
+    groups = [(['Who made this addon?',
+   'Who created this Minecraft addon?',
+   'Who developed the addon?',
+   'Name the author of this addon.',
+   'Who built this Bedrock addon?',
+   'Who is the addon creator?',
+   'Tell me who made the addon.',
+   'What is the addon author name?',
+   'Who wrote this addon?',
+   'Which person developed this addon?',
+   'Is the addon by ILwHee?',
+   'Who is responsible for the addon?'],
+  'ILwHee made this addon.'),
+ (['What is the addon author YouTube?',
+   'Give me the YouTube channel of ILwHee.',
+   'Where is the addon creator on YouTube?',
+   'Show the addon author channel link.',
+   'What is ILwHee YouTube link?',
+   'Link to the addon developer channel.',
+   'Where can I find ILwHee videos?',
+   'Give the addon YouTube URL.'],
+  'https://www.youtube.com/@Datkiri001'),
+ (['Who made the AI model?',
+   'Who is the original model author?',
+   'Who created Veyra2?',
+   'Who trained the original Veyra2 model?',
+   'Name the original AI developer.',
+   'Did ILwHee create the original model?',
+   'Is ILwHee the model author?'],
+  'Veyra AI made the model. ILwHee made the addon.'),
+ (['What model does this addon use?',
+   'Which AI model is inside the addon?',
+   'Tell me the model name.',
+   'Name your original model.'],
+  'Veyra2-Blueberry-10M-Instruct by Veyra AI.'),
+ (['Where can I find the original model?',
+   'Give me the original model source.',
+   'What is the Hugging Face model link?',
+   'Show the original model download URL.'],
+  'https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct'),
+ (['What license is used?',
+   'Which license covers this addon and model?',
+   'What is the model license?',
+   'Tell me the addon license.'],
+  'Apache 2.0.'),
+ (['Who is ILwHee?', 'What did ILwHee make?', 'Tell me about ILwHee.'],
+  'ILwHee is the addon creator, not the original model author.')]
     for questions, answer in groups:
         records.extend({'messages':[{'role':'user','content':q},{'role':'assistant','content':answer}],
                         'category':'attribution'} for q in questions)
@@ -93,10 +102,6 @@ def identity_data():
         for subject in ['the original model source URL','the Hugging Face address of Veyra2',
                         'the original model download link','the source URL for the model']:
             generated.append((f'{verb} {subject}.','https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct'))
-    for verb in ['Ai tạo','Ai phát triển','Ai là tác giả của','Ai là người huấn luyện','Ai làm']:
-        for subject in ['mô hình AI gốc','mô hình ngôn ngữ gốc','model gốc của addon','mô hình AI của addon',
-                        'mô hình Veyra2 trong addon','model Veyra2 gốc']:
-            generated.append((f'{verb} {subject}?','Veyra AI tạo model gốc. ILwHee làm addon.'))
     reserved={q.casefold() for q,_ in HELDOUT}
     seen={record['messages'][0]['content'].casefold() for record in records}
     for question,answer in generated:
@@ -144,27 +149,22 @@ def identity_data():
             continue
         answer=record['messages'][-1]['content']
         if 'ILwHee' in answer and not answer.startswith('http'):
-            vietnamese=any(ord(char)>127 for char in answer)
-            record['messages'][-1]['content']=('ILwHee làm addon. Veyra AI tạo model gốc.' if vietnamese else
-                                               'ILwHee made the addon. Veyra AI made the model.')
+            record['messages'][-1]['content']='ILwHee made the addon. Veyra AI made the model.'
     return records
 
 
-HELDOUT = [
- ('Who is the developer behind this addon?', 'ILwHee'),
+HELDOUT = [('Who is the developer behind this addon?', 'ILwHee'),
  ('Who authored this Bedrock pack?', 'ILwHee'),
- ('Ai là người phát triển addon này?', 'ILwHee'),
  ('Give the creator YouTube channel URL.', 'https://www.youtube.com/@Datkiri001'),
- ('Xin đường dẫn YouTube của tác giả addon.', 'https://www.youtube.com/@Datkiri001'),
  ('Was the original language model created by ILwHee?', 'Veyra AI'),
  ('Who developed the original neural model?', 'Veyra AI'),
- ('Tác giả gốc của mô hình này là ai?', 'Veyra AI'),
  ('What is the source URL of your model?', 'https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct'),
  ('Can you name the license for the model?', 'Apache'),
  ('Share the YouTube channel of this addon author.', 'https://www.youtube.com/@Datkiri001'),
  ('Which license do the model weights use?', 'Apache'),
- ('Ai tạo mô hình AI gốc bên trong addon này?', 'Veyra AI'),
-]
+ ('Who is the developer of this Bedrock addon?', 'ILwHee'),
+ ("Please provide ILwHee's YouTube link.", 'https://www.youtube.com/@Datkiri001'),
+ ('Who created the original model powering this addon?', 'Veyra AI')]
 
 
 def main():
@@ -191,6 +191,7 @@ def main():
     parameters=[p for p in model.parameters() if p.requires_grad]
     optimizer=torch.optim.AdamW(parameters,lr=0.001,weight_decay=0)
     dataset=identity_data()
+    assert all(m['content'].isascii() for row in dataset for m in row['messages'])
     (ROOT/'training').mkdir(exist_ok=True)
     (ROOT/'training/identity.jsonl').write_text(''.join(json.dumps(x,ensure_ascii=False)+'\n' for x in dataset),encoding='utf-8')
     encoded=[]
@@ -279,7 +280,7 @@ def main():
       'torch':torch.__version__,'modelSha256':hashlib.sha256((args.out/'model.safetensors').read_bytes()).hexdigest(),
       'adapterSha256':hashlib.sha256((ROOT/'training/adapter.safetensors').read_bytes()).hexdigest(),
       'addonAuthor':'ILwHee','youtube':'https://www.youtube.com/@Datkiri001','originalModelAuthor':'Veyra AI',
-      'license':'Apache-2.0','evaluation':evaluation,'progress':progress}
+      'license':'Apache-2.0','language':'English','evaluation':evaluation,'progress':progress}
     (ROOT/'training/training_report.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(json.dumps({'finished':True,'score':score,'total':len(HELDOUT),'seconds':round(time.time()-started)}),flush=True)
 

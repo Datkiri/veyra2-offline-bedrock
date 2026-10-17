@@ -91,7 +91,7 @@ function encodePart(text, ids) {
       const symbols = utf8Encode(piece).map(byte => BYTE_ENCODER[byte]);
       for (const symbol of bpe(symbols)) {
         const id = TOKEN_TO_ID.get(symbol);
-        if (id === undefined) throw new Error("Từ vựng tokenizer Veyra2 không khớp");
+        if (id === undefined) throw new Error("Veyra2 tokenizer vocabulary mismatch");
         ids.push(id);
       }
     }
@@ -105,7 +105,7 @@ export function encode(text) {
   for (let match; (match = SPECIAL_RE.exec(text)) !== null;) {
     encodePart(text.slice(start, match.index), ids);
     const id = SPECIAL_IDS[match[0]];
-    if (id === undefined) throw new Error("Không nhận ra token đặc biệt Veyra2 " + match[0]);
+    if (id === undefined) throw new Error("Unknown Veyra2 special token " + match[0]);
     ids.push(id);
     start = match.index + match[0].length;
   }
@@ -121,10 +121,10 @@ export function decode(ids) {
     const special = SPECIAL_BY_ID.get(id);
     if (special) { flush(); result += special; continue; }
     const token = TOKENIZER.tokens[id];
-    if (token === undefined) throw new Error("Không nhận ra ID token Veyra2 " + id);
+    if (token === undefined) throw new Error("Unknown Veyra2 token ID " + id);
     for (const symbol of token) {
       const byte = BYTE_DECODER.get(symbol);
-      if (byte === undefined) throw new Error("Token byte không hợp lệ " + id);
+      if (byte === undefined) throw new Error("Invalid byte-level token " + id);
       bytes.push(byte);
     }
   }

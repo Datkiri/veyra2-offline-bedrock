@@ -1,36 +1,37 @@
-# Veyra2 ngoại tuyến — ILwHee, phiên bản 1.0.2
+# Offline Veyra2 - ILwHee, version 1.0.3
 
-Người làm addon: **ILwHee**.
-YouTube: https://www.youtube.com/@Datkiri001
+Addon creator: **ILwHee**. YouTube: https://www.youtube.com/@Datkiri001
+Original model: **Veyra2-Blueberry-10M-Instruct**, by **Veyra AI**.
+Source: https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct
 
-Model gốc: **Veyra2-Blueberry-10M-Instruct**, tác giả **Veyra AI**.
-Nguồn: https://huggingface.co/veyra-ai/Veyra2-Blueberry-10M-Instruct
+English-only chat, commands, help and notifications. Attribution was fine-tuned
+into the weights using English-only LoRA data, then merged and exported as INT8.
+No author answer router or author information in the system prompt is used.
 
-Đã fine-tune LoRA để model học thông tin tác giả addon, kênh YouTube và phân biệt
-với tác giả model gốc; adapter đã được ghép trước khi xuất INT8. Không chèn tên
-ILwHee vào system prompt hay trả lời tác giả bằng bộ định tuyến cố định.
-
-Gõ `!ai trogiup`. Ngữ cảnh mặc định **tắt** cho từng người chơi:
+Type `!ai help`. Conversation context defaults to **OFF** for each player.
 
 ```text
-!ai tai
+!ai load
 !ai Who made this addon?
 !ai What is ILwHee YouTube link?
 !ai Who made the AI model?
-!ai ngucanh bat
-!ai ngucanh tat
-!ai thongke
+!ai context status
+!ai context on
+!ai context off
+!ai reset
+!ai stats
+!ai calc 1+1
 ```
 
-Đổi chế độ ngữ cảnh sẽ xóa lịch sử cũ. Cache template cố định 82 token vẫn được
-dùng khi tắt ngữ cảnh; cache này không có lịch sử người chơi.
+Changing context mode clears old history. The fixed 82-token template cache
+remains enabled without storing player history. With context OFF, previous
+turns are excluded and no conversation KV session is saved.
 
-Giao diện tiếng Việt, model chủ yếu hội thoại tiếng Anh. Phép tính như `!ai tính
-1+1` được xử lý bằng JavaScript. Chỉ bật một pack chat nhận `!ai` trong thế giới.
-Pack cần Beta APIs, dependency `@minecraft/server: "beta"`.
+Enable Beta APIs; dependency: `@minecraft/server: "beta"`.
+Only activate one chat pack handling `!ai` in your world.
+PC checks: `MODEL_VALIDATION.json` and `COMMAND_VALIDATION.json`.
+This version has not been tested directly in Minecraft.
 
-Kiểm tra PC ở `KIEM_TRA_MODEL.json` và `KIEM_TRA_LENH.json`; chưa có kiểm tra
-trực tiếp Minecraft. Mã nguồn public vẫn có thể bị sửa hoặc huấn luyện lại.
-
-Giấy phép: Apache License 2.0; xem `LICENSE-APACHE-2.0.txt` và `NOTICE`.
-Mã nguồn và adapter: https://github.com/Datkiri/veyra2-offline-bedrock
+License: Apache License 2.0; see `LICENSE-APACHE-2.0.txt` and `NOTICE`.
+Public source can be modified or retrained.
+Source and adapter: https://github.com/Datkiri/veyra2-offline-bedrock

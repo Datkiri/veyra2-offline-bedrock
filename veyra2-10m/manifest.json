@@ -1,13 +1,13 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Veyra2 ngoại tuyến — ILwHee",
-    "description": "Chat AI tiếng Anh và tính toán ngoại tuyến; addon của ILwHee, model của Veyra AI.",
+    "name": "Offline Veyra2 10M Chat - ILwHee",
+    "description": "English-only offline AI chat and calculator. Addon by ILwHee; model by Veyra AI.",
     "uuid": "a14e5f71-2791-4c77-857f-87aa379c930a",
     "version": [
       1,
       0,
-      2
+      3
     ],
     "min_engine_version": [
       1,
@@ -24,24 +24,24 @@
   },
   "modules": [
     {
-      "description": "Addon chat Veyra2 ngoại tuyến — ILwHee",
+      "description": "Offline Veyra2 Chat - ILwHee",
       "type": "data",
       "uuid": "ec2d1c72-5026-44ce-a226-cc41d894e83d",
       "version": [
         1,
         0,
-        2
+        3
       ]
     },
     {
-      "description": "Addon chat Veyra2 ngoại tuyến — ILwHee",
+      "description": "Offline Veyra2 Chat - ILwHee",
       "type": "script",
       "language": "javascript",
       "uuid": "29a24529-aa91-4721-9228-005234a2da09",
       "version": [
         1,
         0,
-        2
+        3
       ],
       "entry": "scripts/main.js"
     }

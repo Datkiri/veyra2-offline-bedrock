@@ -11,14 +11,14 @@ generated=PACK/'scripts/generated'
 source=json.loads((PACK/'scripts/MODEL_SOURCE.json').read_text(encoding='utf-8'))
 training=json.loads((ROOT/'training/training_report.json').read_text(encoding='utf-8'))
 manifest=json.loads((PACK/'manifest.json').read_text(encoding='utf-8'))
-model_check=json.loads((PACK/'KIEM_TRA_MODEL.json').read_text(encoding='utf-8'))
-command_check=json.loads((PACK/'KIEM_TRA_LENH.json').read_text(encoding='utf-8'))
+model_check=json.loads((PACK/'MODEL_VALIDATION.json').read_text(encoding='utf-8'))
+command_check=json.loads((PACK/'COMMAND_VALIDATION.json').read_text(encoding='utf-8'))
 assert model_check['passed']==model_check['total']
 assert model_check['defaultSamplingPassed']==model_check['defaultSamplingTotal']
 assert all(command_check.values())
 assert manifest['metadata']['authors']==['ILwHee']
 assert manifest['metadata']['url']=='https://www.youtube.com/@Datkiri001'
-assert manifest['header']['version']==[1,0,2]
+assert manifest['header']['version']==[1,0,3]
 assert manifest['dependencies']==[{'module_name':'@minecraft/server','version':'beta'}]
 assert source['fineTune']['modelSha256']==training['modelSha256']
 assert hashlib.sha256((ROOT/'training/adapter.safetensors').read_bytes()).hexdigest()==training['adapterSha256']
@@ -39,10 +39,10 @@ for path in ROOT.rglob('*'):
     if not path.is_file() or any(part in {'.git','dist','checkpoints','__pycache__','node_modules'} for part in path.relative_to(ROOT).parts):
         continue
     data=path.read_bytes()
-    assert (b'github'+b'_pat_') not in data,'Phát hiện chuỗi token trong nguồn'
-    assert not re.search(rb'gh[pousr]_[A-Za-z0-9_]{24,}',data),'Phát hiện chuỗi token trong nguồn'
+    assert (b'github'+b'_pat_') not in data,'Credential pattern found in source'
+    assert not re.search(rb'gh[pousr]_[A-Za-z0-9_]{24,}',data),'Credential pattern found in source'
 (ROOT/'dist').mkdir(exist_ok=True)
-target=ROOT/'dist/veyra2-ilwhee-1.0.2.mcpack'
+target=ROOT/'dist/veyra2-ilwhee-1.0.3.mcpack'
 with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED) as archive:
     for path in sorted(PACK.rglob('*')):
         if path.is_file():
