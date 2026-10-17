@@ -18,7 +18,7 @@ assert model_check['defaultSamplingPassed']==model_check['defaultSamplingTotal']
 assert all(command_check.values())
 assert manifest['metadata']['authors']==['ILwHee']
 assert manifest['metadata']['url']=='https://www.youtube.com/@Datkiri001'
-assert manifest['header']['version']==[1,0,3]
+assert manifest['header']['version']==[1,0,4]
 assert manifest['dependencies']==[{'module_name':'@minecraft/server','version':'beta'}]
 assert source['fineTune']['modelSha256']==training['modelSha256']
 assert hashlib.sha256((ROOT/'training/adapter.safetensors').read_bytes()).hexdigest()==training['adapterSha256']
@@ -42,7 +42,7 @@ for path in ROOT.rglob('*'):
     assert (b'github'+b'_pat_') not in data,'Credential pattern found in source'
     assert not re.search(rb'gh[pousr]_[A-Za-z0-9_]{24,}',data),'Credential pattern found in source'
 (ROOT/'dist').mkdir(exist_ok=True)
-target=ROOT/'dist/veyra2-ilwhee-1.0.3.mcpack'
+target=ROOT/'dist/veyra2-ilwhee-1.0.4.mcpack'
 with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_DEFLATED) as archive:
     for path in sorted(PACK.rglob('*')):
         if path.is_file():

@@ -9,17 +9,17 @@ No AI server or Internet connection is needed during play.
 ILwHee created the addon and attribution fine-tune, not the original model.
 The addon and derived model use Apache License 2.0; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
-## Install 1.0.3
+## Install 1.0.4
 
-Download [veyra2-ilwhee-1.0.3.mcpack](https://github.com/Datkiri/veyra2-offline-bedrock/releases/download/v1.0.3/veyra2-ilwhee-1.0.3.mcpack)
-from the [release page](https://github.com/Datkiri/veyra2-offline-bedrock/releases/tag/v1.0.3),
+Download [veyra2-ilwhee-1.0.4.mcpack](https://github.com/Datkiri/veyra2-offline-bedrock/releases/download/v1.0.4/veyra2-ilwhee-1.0.4.mcpack)
+from the [release page](https://github.com/Datkiri/veyra2-offline-bedrock/releases/tag/v1.0.4),
 or copy `veyra2-10m` into `behavior_packs`.
 
 1. Import and activate **Offline Veyra2 10M Chat** in your world.
 2. Disable other chat packs using `!ai`.
 3. Enable the required Beta APIs. The dependency is `@minecraft/server: "beta"`;
    the minimum engine version remains `[1,26,30]`.
-4. Reopen your world after updating. The startup log should show **1.0.3**.
+4. Reopen your world after updating. The startup log should show **1.0.4**.
 
 ## Commands
 

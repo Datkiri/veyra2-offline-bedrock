@@ -287,7 +287,7 @@ world.beforeEvents.chatSend.subscribe(event => {
   });
 });
 
-console.warn("[Veyra2] English-only chat pack 1.0.3 ready (INT8 tile4 + prefix snapshot). Type !ai help.");
+console.warn("[Veyra2] English-only chat pack 1.0.4 ready (INT8 tile4 + prefix snapshot). Type !ai help.");
 
 system.runInterval(() => {
   const progress = activeProgress;

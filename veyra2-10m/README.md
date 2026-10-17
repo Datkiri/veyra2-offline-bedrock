@@ -1,4 +1,4 @@
-# Offline Veyra2 - ILwHee, version 1.0.3
+# Offline Veyra2 - ILwHee, version 1.0.4
 
 Addon creator: **ILwHee**. YouTube: https://www.youtube.com/@Datkiri001
 Original model: **Veyra2-Blueberry-10M-Instruct**, by **Veyra AI**.
