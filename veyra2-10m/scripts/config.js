@@ -11,7 +11,7 @@ export const CONFIG = {
   macPerYield: 100000,
   sliceMs: 0,
   workPerYield: 262144,
-  kernelCalibrationMs: 8000,
+  kernelCalibrationMs: 12000,
   kernelBenchmarkMs: 60000,
   maxChatLength: 240,
 };

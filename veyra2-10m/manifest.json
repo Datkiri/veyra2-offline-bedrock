@@ -6,8 +6,8 @@
     "uuid": "a14e5f71-2791-4c77-857f-87aa379c930a",
     "version": [
       1,
-      0,
-      4
+      1,
+      0
     ],
     "min_engine_version": [
       1,
@@ -29,8 +29,8 @@
       "uuid": "ec2d1c72-5026-44ce-a226-cc41d894e83d",
       "version": [
         1,
-        0,
-        4
+        1,
+        0
       ]
     },
     {
@@ -40,8 +40,8 @@
       "uuid": "29a24529-aa91-4721-9228-005234a2da09",
       "version": [
         1,
-        0,
-        4
+        1,
+        0
       ],
       "entry": "scripts/main.js"
     }
@@ -51,5 +51,8 @@
       "module_name": "@minecraft/server",
       "version": "beta"
     }
+  ],
+  "capabilities": [
+    "script_eval"
   ]
 }

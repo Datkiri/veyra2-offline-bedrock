@@ -1,7 +1,8 @@
 import { decode, encode } from "./tokenizer.js";
 import { benchKernels, calibrateKernels, demoteKernel, getKernelMode,
-  getKernelStatus, maxRowsPerSlice, runKernelRows, scalarRows, withinTolerance } from "./kernels.js";
+  getKernelRunner, getKernelStatus, maxRowsPerSlice, scalarRows, withinTolerance } from "./kernels.js";
 import { DIM, SYSTEM_PREFIX } from "./generated/model_config.js";
+import { mathKernels } from "./math_kernels.js";
 export { benchKernels, calibrateKernels, getKernelStatus, DIM };
 const H = DIM.hidden;
 const HD = DIM.headSize;
@@ -35,13 +36,17 @@ const S = {
 function* linearInto(input, matrix, output, counter) {
   const { rows, cols } = matrix;
   let mode = getKernelMode(matrix);
+  let kernel;
+  try { kernel = getKernelRunner(mode, matrix); }
+  catch (error) { demoteKernel(matrix, error); mode = "scalar"; kernel = scalarRows; }
   for (let row = 0; row < rows;) {
     const remaining = Math.max(1, Math.floor((counter.budget - counter.work) / cols));
     const end = Math.min(rows, row + Math.min(maxRowsPerSlice(), remaining));
-    try { runKernelRows(mode, input, matrix, output, row, end); }
+    try { kernel(input, matrix, output, row, end); }
     catch (error) {
       demoteKernel(matrix, error);
       mode = "scalar";
+      kernel = scalarRows;
       scalarRows(input, matrix, output, row, end);
     }
     if (row === 0 && mode !== "scalar") {
@@ -49,6 +54,7 @@ function* linearInto(input, matrix, output, counter) {
       if (!withinTolerance(VERIFY_ROW[0], output[0])) {
         demoteKernel(matrix, "first-row result differed from scalar");
         mode = "scalar";
+        kernel = scalarRows;
         scalarRows(input, matrix, output, row, end);
       }
     }
@@ -64,55 +70,9 @@ function* linearInto(input, matrix, output, counter) {
   }
 }
 
-function embeddingRow(matrix, row, output) {
-  const stride = matrix.layout === "tile4" ? 4 : 1;
-  const offset = stride === 4 ? (row - (row & 3)) * matrix.cols + (row & 3) : row * matrix.cols;
-  const scale = matrix.scales[row];
-  for (let i = 0; i < matrix.cols; i++) output[i] = matrix.values[offset + i * stride] * scale;
-}
-
-                                                                         
-function headNormInto(vector, heads, weight) {
-  for (let head = 0; head < heads; head++) {
-    const base = head * HD;
-    let sum = 0;
-    for (let i = 0; i < HD; i++) sum += vector[base + i] * vector[base + i];
-    const inverse = 1 / Math.sqrt(sum / HD + DIM.rmsEpsilon);
-    for (let i = 0; i < HD; i++) vector[base + i] *= inverse * weight[i];
-  }
-}
-
-function rmsNormInto(input, weight, output) {
-  let squareSum = 0;
-  for (let i = 0; i < input.length; i++) squareSum += input[i] * input[i];
-  const inverse = 1 / Math.sqrt(squareSum / input.length + DIM.rmsEpsilon);
-  for (let i = 0; i < input.length; i++) output[i] = input[i] * inverse * weight[i];
-}
-
-function prepareRope(position) {
-  for (let i = 0; i < HD / 2; i++) {
-    const angle = position * Math.pow(DIM.ropeTheta, -(2 * i) / HD);
-    S.ropeCos[i] = Math.cos(angle);
-    S.ropeSin[i] = Math.sin(angle);
-  }
-}
-
-function rotateHalf(vector, heads) {
-  for (let head = 0; head < heads; head++) {
-    const base = head * HD;
-    for (let i = 0; i < HD / 2; i++) {
-      const cos = S.ropeCos[i];
-      const sin = S.ropeSin[i];
-      const first = vector[base + i];
-      const second = vector[base + i + HD / 2];
-      vector[base + i] = first * cos - second * sin;
-      vector[base + i + HD / 2] = second * cos + first * sin;
-    }
-  }
-}
-
 function* attendInto(query, keyCache, valueCache, position, output, counter) {
   const scale = 1 / Math.sqrt(HD);
+  const dotKernel = mathKernels.dot, weightedKernel = mathKernels.weightedAdd;
   output.fill(0);
   for (let head = 0; head < DIM.heads; head++) {
     const qBase = head * HD;
@@ -120,8 +80,7 @@ function* attendInto(query, keyCache, valueCache, position, output, counter) {
     let maximum = -Infinity;
     for (let p = 0; p <= position; p++) {
       const cacheBase = p * KV_WIDTH + kvBase;
-      let dot = 0;
-      for (let i = 0; i < HD; i++) dot += query[qBase + i] * keyCache[cacheBase + i];
+      const dot = dotKernel(query, qBase, keyCache, cacheBase);
       const score = dot * scale;
       S.scores[p] = score;
       if (score > maximum) maximum = score;
@@ -144,8 +103,7 @@ function* attendInto(query, keyCache, valueCache, position, output, counter) {
     for (let p = 0; p <= position; p++) {
       const probability = S.scores[p] * inverseTotal;
       const cacheBase = p * KV_WIDTH + kvBase;
-      const outBase = qBase;
-      for (let i = 0; i < HD; i++) output[outBase + i] += probability * valueCache[cacheBase + i];
+      weightedKernel(output, qBase, valueCache, cacheBase, probability);
       counter.work += HD;
       counter.macs += HD;
       if (counter.work >= counter.budget || (counter.sliceMs > 0 && now() - counter.sliceStart >= counter.sliceMs)) {
@@ -166,8 +124,8 @@ function* forwardToken(tensors, tokenId, position, cache, counter, needHidden = 
   const embedding = tensors["model.embed_tokens.weight"];
   if (tokenId < 0 || tokenId >= DIM.vocab) throw new Error(`Token id outside Veyra2 vocab: ${tokenId}`);
   if (position >= cache.limit) throw new Error(`Context limit ${cache.limit} exceeded`);
-  embeddingRow(embedding, tokenId, S.hidden);
-  prepareRope(position);
+  mathKernels.embedding(embedding, tokenId, S.hidden);
+  mathKernels.prepareRope(position, S.ropeCos, S.ropeSin);
 
   for (let layer = 0; layer < DIM.layers; layer++) {
     const key = cache.keys[layer];
@@ -177,15 +135,15 @@ function* forwardToken(tensors, tokenId, position, cache, counter, needHidden = 
     const base = position * KV_WIDTH;
 
     S.residual.set(S.hidden);
-    rmsNormInto(S.hidden, inputNorm, S.norm);
+    mathKernels.norm(S.hidden, inputNorm, S.norm);
     const cacheOnly = !needHidden && layer === DIM.layers - 1;
     if (!cacheOnly) yield* linearInto(S.norm, layerTensor(tensors, layer, "self_attn.q_proj.weight"), S.q, counter);
     yield* linearInto(S.norm, layerTensor(tensors, layer, "self_attn.k_proj.weight"), S.k, counter);
     yield* linearInto(S.norm, layerTensor(tensors, layer, "self_attn.v_proj.weight"), S.v, counter);
-    if (!cacheOnly) headNormInto(S.q, DIM.heads, layerTensor(tensors, layer, "self_attn.q_norm.weight"));
-    headNormInto(S.k, DIM.kvHeads, layerTensor(tensors, layer, "self_attn.k_norm.weight"));
-    if (!cacheOnly) rotateHalf(S.q, DIM.heads);
-    rotateHalf(S.k, DIM.kvHeads);
+    if (!cacheOnly) mathKernels.headNorm(S.q, DIM.heads, layerTensor(tensors, layer, "self_attn.q_norm.weight"));
+    mathKernels.headNorm(S.k, DIM.kvHeads, layerTensor(tensors, layer, "self_attn.k_norm.weight"));
+    if (!cacheOnly) mathKernels.rope(S.q, DIM.heads, S.ropeCos, S.ropeSin);
+    mathKernels.rope(S.k, DIM.kvHeads, S.ropeCos, S.ropeSin);
     key.set(S.k, base);
     value.set(S.v, base);
                                                                                     
@@ -197,20 +155,17 @@ function* forwardToken(tensors, tokenId, position, cache, counter, needHidden = 
 
     yield* attendInto(S.q, key, value, position, S.attention, counter);
     yield* linearInto(S.attention, layerTensor(tensors, layer, "self_attn.o_proj.weight"), S.projection, counter);
-    for (let i = 0; i < H; i++) S.hidden[i] = S.residual[i] + S.projection[i];
+    mathKernels.residual(S.residual, S.projection, S.hidden);
 
     S.residual2.set(S.hidden);
-    rmsNormInto(S.hidden, postNorm, S.norm);
+    mathKernels.norm(S.hidden, postNorm, S.norm);
     yield* linearInto(S.norm, layerTensor(tensors, layer, "mlp.gate_proj.weight"), S.gate, counter);
     yield* linearInto(S.norm, layerTensor(tensors, layer, "mlp.up_proj.weight"), S.up, counter);
-    for (let i = 0; i < DIM.ffn; i++) {
-      const gate = S.gate[i];
-      S.gate[i] = (gate / (1 + Math.exp(-gate))) * S.up[i];
-    }
+    mathKernels.swiglu(S.gate, S.up);
     yield* linearInto(S.gate, layerTensor(tensors, layer, "mlp.down_proj.weight"), S.mlp, counter);
-    for (let i = 0; i < H; i++) S.hidden[i] = S.residual2[i] + S.mlp[i];
+    mathKernels.residual(S.residual2, S.mlp, S.hidden);
   }
-  rmsNormInto(S.hidden, tensors["model.norm.weight"], S.hidden);
+  mathKernels.norm(S.hidden, tensors["model.norm.weight"], S.hidden);
   return S.hidden;
 }
 

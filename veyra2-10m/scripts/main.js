@@ -33,6 +33,16 @@ function kernelSummary() {
   return Object.entries(selected).map(([shape, mode]) => `${shape}:${mode}`).join(" ") || "scalar";
 }
 
+function dynamicSummary() {
+  const status = getKernelStatus();
+  const label = value => value === true ? "available" : value === false ? "unavailable" : "not probed";
+  return `Dynamic compilers: eval ${label(status.evalAvailable)}, Function ${label(status.functionAvailable)}; ${status.dynamic?.compiledKernels || 0} compiled kernels; compilation ${(status.dynamic?.compileMs || 0).toFixed(0)}ms.`;
+}
+
+function mathSummary() {
+  return Object.entries(getKernelStatus().math?.selected || {}).map(([name, mode]) => `${name}:${mode}`).join(" ") || "builtin";
+}
+
 function* loadWeights() {
   const started = now();
   try {
@@ -42,8 +52,9 @@ function* loadWeights() {
     try {
       const report = yield* calibrateKernels(tensors, { maxMs: CONFIG.kernelCalibrationMs });
       console.warn(`[Veyra2] Kernel calibration ${report.elapsedMs.toFixed(0)}ms; ${kernelSummary()}`);
+      console.warn(`[Veyra2] ${dynamicSummary()} Math ${mathSummary()}`);
     } catch (error) {
-      console.warn(`[Veyra2] Kernel calibration unavailable; using scalar: ${error}`);
+      console.warn(`[Veyra2] Kernel calibration interrupted; keeping available kernels: ${error}`);
     }
   } catch (error) {
     loadError = String(error);
@@ -60,6 +71,10 @@ function* runKernelBench(player) {
     const report = yield* benchKernels(tensors, { maxMs: CONFIG.kernelBenchmarkMs });
     const ticks = system.currentTick - startedTick;
     tell(player, `Kernel benchmark ${report.elapsedMs.toFixed(0)}ms / ${ticks} ticks · ${kernelSummary()}`);
+    tell(player, dynamicSummary());
+    tell(player, `Math kernels ${mathSummary()}`);
+    if (report.budgetExhausted || Object.values(report.results || {}).some(value => value.budgetExhausted))
+      tell(player, "Some measurements reached the time budget. Completed results were kept.");
     console.warn(`[Veyra2] Kernel benchmark: ${JSON.stringify({ ...report, ticks })}`);
   } catch (error) {
     console.warn(`[Veyra2] Kernel benchmark failed: ${error}`);
@@ -194,6 +209,7 @@ function command(player, body) {
     player.sendMessage("§7English-only Veyra2-Blueberry-10M-Instruct, offline INT8 chat. Addon by ILwHee; original model by Veyra AI.");
     player.sendMessage("§7Conversation context defaults to OFF: !ai context on | !ai context off | !ai context status.");
     player.sendMessage("§7Calculator: !ai calc (2+3)*4. Clear conversation history with !ai reset.");
+    player.sendMessage("§7Use !ai bench kernels to compare built-in, eval and Function kernels on your device.");
     return;
   }
   if (lower === "cancel") {
@@ -242,6 +258,8 @@ function command(player, body) {
       else tell(player, `${activeProgress.phase} ${activeProgress.done}/${activeProgress.total}; ${(activeProgress.counter?.macs / 1000000 || 0).toFixed(0)}M MAC; elapsed ${((now() - activeProgress.started) / 1000).toFixed(0)}s.`);
     }
     tell(player, `Kernels ${kernelSummary()}`);
+    tell(player, dynamicSummary());
+    tell(player, `Math kernels ${mathSummary()}`);
     return;
   }
   if (lower === "stats") {
@@ -287,7 +305,7 @@ world.beforeEvents.chatSend.subscribe(event => {
   });
 });
 
-console.warn("[Veyra2] English-only chat pack 1.0.4 ready (INT8 tile4 + prefix snapshot). Type !ai help.");
+console.warn("[Veyra2] English-only chat pack 1.1.0 ready (INT8 + eval/Function kernels + prefix snapshot). Type !ai help.");
 
 system.runInterval(() => {
   const progress = activeProgress;

@@ -1,4 +1,4 @@
-# Offline Veyra2 - ILwHee, version 1.0.4
+# Offline Veyra2 - ILwHee, version 1.1.0 (experimental)
 
 Addon creator: **ILwHee**. YouTube: https://www.youtube.com/@Datkiri001
 Original model: **Veyra2-Blueberry-10M-Instruct**, by **Veyra AI**.
@@ -29,7 +29,15 @@ turns are excluded and no conversation KV session is saved.
 
 Enable Beta APIs; dependency: `@minecraft/server: "beta"`.
 Only activate one chat pack handling `!ai` in your world.
-PC checks: `MODEL_VALIDATION.json` and `COMMAND_VALIDATION.json`.
+Generated matrix and auxiliary kernels use cached `eval()` and `new Function()`
+compilation. Device calibration checks results and selects measured winners.
+Use `!ai status` for compiler availability and `!ai bench kernels` for details.
+Startup calibration is limited to 12 seconds; the explicit benchmark to 60 seconds.
+The pack declares the `script_eval` manifest capability.
+
+Historical 1.0.4 PC checks: `MODEL_VALIDATION.json` and `COMMAND_VALIDATION.json`.
+The 1.1.0 update was parsed and packaged; runtime tests and benchmarks have not
+been run for the new code.
 This version has not been tested directly in Minecraft.
 
 License: Apache License 2.0; see `LICENSE-APACHE-2.0.txt` and `NOTICE`.

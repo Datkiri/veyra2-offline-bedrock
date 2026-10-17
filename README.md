@@ -9,17 +9,17 @@ No AI server or Internet connection is needed during play.
 ILwHee created the addon and attribution fine-tune, not the original model.
 The addon and derived model use Apache License 2.0; see [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
-## Install 1.0.4
+## Install 1.1.0 (experimental)
 
-Download [veyra2-ilwhee-1.0.4.mcpack](https://github.com/Datkiri/veyra2-offline-bedrock/releases/download/v1.0.4/veyra2-ilwhee-1.0.4.mcpack)
-from the [release page](https://github.com/Datkiri/veyra2-offline-bedrock/releases/tag/v1.0.4),
+Download [veyra2-ilwhee-1.1.0.mcpack](https://github.com/Datkiri/veyra2-offline-bedrock/releases/download/v1.1.0/veyra2-ilwhee-1.1.0.mcpack)
+from the [release page](https://github.com/Datkiri/veyra2-offline-bedrock/releases/tag/v1.1.0),
 or copy `veyra2-10m` into `behavior_packs`.
 
 1. Import and activate **Offline Veyra2 10M Chat** in your world.
 2. Disable other chat packs using `!ai`.
 3. Enable the required Beta APIs. The dependency is `@minecraft/server: "beta"`;
    the minimum engine version remains `[1,26,30]`.
-4. Reopen your world after updating. The startup log should show **1.0.4**.
+4. Reopen your world after updating. The startup log should show **1.1.0**.
 
 ## Commands
 
@@ -48,6 +48,36 @@ The fixed 82-token template cache works in both modes and contains no player his
 Commands, help, notifications, logs and fine-tuning data are in English.
 The model is intended for English conversation; language generation remains probabilistic.
 
+## Generated kernels in 1.1.0
+
+This experimental runtime enables `script_eval` and generates reusable kernels
+with both indirect `eval()` and `new Function()`. The compiler receives only
+internal source templates and fixed model dimensions. Chat messages, model
+answers and weight contents are never evaluated as code.
+
+- Matrix candidates use tile4 with column unrolling by 4, 8 or 16 for widths
+  384 and 700. The five projection shapes are calibrated independently.
+- Generated auxiliary kernels cover embedding lookup, RMSNorm, head RMSNorm,
+  RoPE frequency preparation and rotation, attention dot products and weighted
+  sums, SwiGLU and residual addition. RoPE frequency constants are computed once.
+- Functions and compiler failures are cached. Code is generated once and reused;
+  matrix inference resolves the selected function once per projection.
+- Calibration compares candidates against the built-in calculations before
+  timing them. It covers negative inputs, unaligned row slices and in-place
+  normalization/residual buffers. A generated candidate needs a measured speed
+  advantage; unavailable or invalid candidates retain the built-in fallback.
+- Startup calibration has a 12-second wall-time budget. The explicit benchmark
+  uses up to 256 rows per matrix shape and three timing samples, with a 60-second
+  budget. Incomplete or unresolved timings are not selected as winners.
+- `!ai status` shows actual compiler availability, compilation time and selected
+  math kernels. `!ai bench kernels` reports individual matrix candidates and
+  auxiliary results in the Content Log.
+
+Only source parsing and packaging were performed for this update. The existing
+`MODEL_VALIDATION.json` and `COMMAND_VALIDATION.json` describe the 1.0.4 baseline;
+they are not validation of the new generated runtime. Model weights are unchanged.
+This runtime has not been benchmarked in Minecraft and no speedup is claimed.
+
 ## Attribution learned in the weights
 
 Version 1.0.3 uses English-only attribution training from the original checkpoint.
@@ -74,7 +104,7 @@ allow modifications; fine-tuning does not prevent editing or guarantee correct a
 - 256-token context, at most 224 prompt tokens and up to 48 reply tokens, bounded by remaining context.
 - JavaScript calculator supports addition, subtraction, multiplication, division and parentheses;
   magnitude limit 10^12, nesting limit 16 and 12 significant display digits.
-- PC validation covers Transformers INT8 parity, attribution, default sampling,
+- Baseline 1.0.4 PC validation covers Transformers INT8 parity, attribution, default sampling,
   kernels, caches and context commands. See `veyra2-10m/MODEL_VALIDATION.json`
   and `veyra2-10m/COMMAND_VALIDATION.json`.
 - This version has not been tested directly in Minecraft. No in-game speed claim is made.

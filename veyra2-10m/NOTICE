@@ -11,7 +11,8 @@ Original model license: Apache License 2.0
 
 Changes: English-only LoRA fine-tuning for addon and model attribution, adapter
 merging into FP32 weights, row-wise INT8 quantization, tile4 interleaving,
-JavaScript tokenizer conversion and a fixed-prefix K/V snapshot.
+JavaScript tokenizer conversion, a fixed-prefix K/V snapshot, and generated
+eval/Function matrix and auxiliary kernels with device calibration.
 ILwHee created the addon and this fine-tune. Veyra AI created the original model.
 
 Addon code, adapters and the original attribution dataset in this project are
